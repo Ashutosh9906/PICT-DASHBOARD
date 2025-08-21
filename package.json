@@ -1,0 +1,26 @@
+{
+  "name": "pict-dashboard",
+  "version": "1.0.0",
+  "description": "a web application to display INBOX on dashboard",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ashutosh9906/PICT-DASHBOARD.git"
+  },
+  "author": "gandule_D_ashutosh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ashutosh9906/PICT-DASHBOARD/issues"
+  },
+  "homepage": "https://github.com/Ashutosh9906/PICT-DASHBOARD#readme",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "googleapi": "^1.0.2",
+    "googleapis": "^156.0.0"
+  }
+}
