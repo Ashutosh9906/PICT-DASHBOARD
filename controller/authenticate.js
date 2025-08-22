@@ -1,18 +1,32 @@
 const { google } = require("googleapis");
+const fs = require("fs");
+const path = require("path");
 
-const credentials = require("../json/secrets.json");
-const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
-const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+const oAuth2Client = require("../credentials");
+const TOKEN_PATH = path.join(__dirname, '..', 'json', 'token.json');
 
-
-async function handleAuthentication(req, res){
+async function handleAuthentication(req, res) {
     const authUrl = oAuth2Client.generateAuthUrl({
-        access_types: 'offlie',
-        scope: 'https://www.googleapis.com/auth/gmail.readonly'
+        access_type: 'offline',
+        prompt: "consent",
+        scope: ['https://www.googleapis.com/auth/gmail.readonly']
     })
     res.redirect(authUrl);
 }
 
+async function handleVerifyEmail(req, res) {
+    const code = req.query.code;
+    // const { tokens } = await oAuth2Client.getToken(code);
+    oAuth2Client.getToken(code).then(({ tokens }) => {
+        oAuth2Client.setCredentials(tokens);
+
+        fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
+        console.log("Tokens stored in token.json:", tokens);
+    });
+    return res.redirect("/messages");
+}
+
 module.exports = {
-    handleAuthentication
+    handleAuthentication,
+    handleVerifyEmail
 }

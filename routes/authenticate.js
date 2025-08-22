@@ -1,8 +1,9 @@
 const { Router } = require("express");
-const { handleAuthentication } = require("../controller/authenticate");
+const { handleAuthentication, handleVerifyEmail } = require("../controller/authenticate");
 
 const router = Router();
 
-router.get("/", handleAuthentication)
+router.get("/auth", handleAuthentication);
+router.get("/oauth2callback", handleVerifyEmail);
 
 module.exports = router;
