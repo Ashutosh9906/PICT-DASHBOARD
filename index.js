@@ -1,12 +1,16 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const { google } = require("googleapis")
-const { config } = require("dotenv")
+const mongoose = require("mongoose")
+const { google } = require("googleapis");
+const { config } = require("dotenv");
 config();
 
 const app = express();
 const oAuth2Client = require("./credentials");
+
+mongoose.connect(process.env.MONGO_URI)
+        .then(() => console.log("MongoDB Connected"));
 
 const authenticateRoute = require("./routes/authenticate");
 const messageRoute = require("./routes/messages");

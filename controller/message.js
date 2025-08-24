@@ -5,6 +5,7 @@ const path = require("path");
 const oAuth2Client = require("../credentials");
 const { getMessage, parseMessage } = require("../utilities/messages")
 const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+const Message = require("../models/message");
 let lastHistoryId = null;
 
 const TOKEN_PATH = path.join(__dirname, "../json/token.json");
@@ -50,7 +51,14 @@ async function handleNewMail(req, res) {
                         const fullMessage = await getMessage(m.id);
                         const parsed = parseMessage(fullMessage);
                         parsed.body = parsed.body.replace(/\s+/g, " ").trim();
+                        const { subject, from, date, body } = parsed;
                         console.log("NEW EMAIL:", parsed);
+                        await Message.create({
+                            subject,
+                            from,
+                            date,
+                            body
+                        });
                     }
                 }
             }
@@ -65,29 +73,11 @@ async function handleNewMail(req, res) {
     res.status(200).send("OK");
 }
 
-async function fetchMessages() {
-    const response = await gmail.users.messages.list({
-        userId: 'me',
-        labelIds: ['INBOX'],
-        maxResults: 5
-    })
-
-    const parsedMessages = [];
-    for (const msg of response.data.messages) {
-        const fullMessage = await getMessage(msg.id);
-        const parsed = parseMessage(fullMessage);
-        // parsed.body = parsed.body.replace(/https?:\/\/[^\s]+/g, "");
-        parsed.body = parsed.body.replace(/\s+/g, " ").trim();
-        parsedMessages.push(parsed);
-    }
-    return parsedMessages;
-}
-
 async function handleListMessage(req, res) {
     try {
-        const messages = await fetchMessages();
+        const messages = await Message.find();
         console.log(messages);
-        return res.status(200).json({ msg: "Email Parsed successfully" });
+        return res.status(200).json({ messages });
     } catch (error) {
         console.log("Error", error);
         return res.status(400).json({ err: "Internal Server Error" })
