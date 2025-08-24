@@ -10,6 +10,10 @@ const oAuth2Client = require("./credentials");
 
 const authenticateRoute = require("./routes/authenticate");
 const messageRoute = require("./routes/messages");
+const { startWatch } = require("./controller/message");
+
+//Start Watch on INBOX
+startWatch();
 
 //To authenticate User
 app.use("/user", authenticateRoute);

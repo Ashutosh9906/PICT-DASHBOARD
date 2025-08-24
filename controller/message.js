@@ -12,6 +12,35 @@ if (fs.existsSync(TOKEN_PATH)) {
     oAuth2Client.setCredentials(tokens);
 }
 
+async function startWatch() {
+    try {
+        const response = await gmail.users.watch({
+            userId: "me",
+            requestBody: {
+                labelIds: ["INBOX"],
+                topicName: "projects/gmail-tracer/topics/gmail-notifications"
+            }
+        });
+        return console.log("Watch Response", response.data);
+    } catch (error) {
+        console.log("Error", error);
+        return res.status(400).json({ err: "Internal Server Error" })
+    }
+}
+
+async function handleNewMail(req, res){
+    try {
+        const message = Buffer.from(req.body.message.data, "base64").toString("utf8")
+        const data = JSON.parse(message);
+        console.log("New Gmail Notification", data);
+        res.redirect("/messages");
+    } catch (error) {
+        console.log("Error", error);
+        return res.status(400).json({ err: "Internal Server Error" })
+    }
+    res.status(200).send("OK");
+}
+
 async function handleListMessage(req, res) {
     try {
         const response = await gmail.users.messages.list({
@@ -35,5 +64,7 @@ async function handleListMessage(req, res) {
 }
 
 module.exports = {
-    handleListMessage
+    handleListMessage,
+    startWatch,
+    handleNewMail
 }
