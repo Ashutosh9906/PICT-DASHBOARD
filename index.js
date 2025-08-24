@@ -12,6 +12,8 @@ const authenticateRoute = require("./routes/authenticate");
 const messageRoute = require("./routes/messages");
 const { startWatch } = require("./controller/message");
 
+app.use(express.json());
+
 //Start Watch on INBOX
 startWatch();
 
