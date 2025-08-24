@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor's Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+</head>
+<style>
+    :root {
+        --colorI: #f7f2eb;
+        --colorII: #ffffff;  
+        --colorIII: #dde3ff; 
+        --colorIV: #bad6eb;  
+        --colorV: #7096d1; 
+        --colorVI: #334eac;  
+        --colorVII: #081f5c; 
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        background-color: var(--colorIV);
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* --- Vertical Navigation Sidebar --- */
+    .sidebar {
+        margin: 16px;
+        background-color: var(--colorII);
+        border-right: 1px solid #e0e0e0;
+        border-radius: 16px;
+        width: 80px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem 0;
+        transition: width 0.3s ease;
+    }
+
+    .sidebar:hover {
+        width: 180px;
+    }
+    
+    .sidebar .logo {
+        font-size: 2rem;
+        color: var(--colorVI);
+        margin-bottom: 2rem;
+    }
+
+    .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .sidebar .nav-element {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #7a7a7a;
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .sidebar .nav-element .material-icons-sharp {
+        font-size: 1.8rem;
+        transition: color 0.3s ease;
+    }
+    
+    .sidebar .nav-element .nav-text {
+        font-weight: 500;
+        transition: opacity 0.2s ease;
+        opacity: 0;
+    }
+    
+    .sidebar:hover .nav-element .nav-text {
+        opacity: 1;
+    }
+
+    .sidebar .nav-element:hover, .sidebar .nav-element.active {
+        color: var(--colorVI);
+    }
+
+    .sidebar .nav-element.active {
+        background-color: var(--colorIII);
+    }
+    
+    .sidebar .nav-element.active::before {
+        content: '';
+        position: absolute;
+
+        left: 0;
+        top: 0;
+        width: 5px;
+        height: 100%;
+        background-color: var(--colorVI);
+    }
+
+    /* --- Main Content Area --- */
+    .main-container {
+        flex-grow: 1;
+        padding: 2rem;
+        overflow-y: auto; /* Makes only this container scrollable */
+        height: 100vh;
+    }
+
+    header {
+        margin-bottom: 2rem;
+    }
+
+    header h1 {
+        font-size: 2.2rem;
+        color: var(--colorVII);
+        font-weight: 700;
+    }
+
+    /* Card Styling for Sections */
+    .card {
+        background-color: var(--colorII);
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+    }
+
+    .card h2 {
+        font-size: 1.4rem;
+        color: var(--colorVI);
+        margin-bottom: 1rem;
+    }
+
+    .card p {
+        line-height: 1.6;
+        color: #555;
+    }
+    
+    /* Table Styling */
+    .table-container h2 {
+         margin-bottom: 1.5rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #f9f9f9;
+    }
+
+    th, td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        font-weight: 600;
+        color: var(--colorVII);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    tbody tr:hover {
+        background-color: #f7faff;
+    }
+
+    td .content-link {
+        color: var(--colorV);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    td .content-link:hover {
+        text-decoration: underline;
+    }
+</style>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="material-icons-sharp">school</span>
+        </div>
+        <nav>
+            <a class="nav-element active" href="#home">
+                <span class="material-icons-sharp">dashboard</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a class="nav-element" href="#courses">
+                <span class="material-icons-sharp">book</span>
+                <span class="nav-text">Courses</span>
+            </a>
+            <a class="nav-element" href="#grades">
+                <span class="material-icons-sharp">assessment</span>
+                <span class="nav-text">Grades</span>
+            </a>
+            <a class="nav-element" href="#messages">
+                <span class="material-icons-sharp">mail_outline</span>
+                <span class="nav-text">Messages</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-container">
+        <header>
+            <h1>PICT Dashboard</h1>
+        </header>
+
+        <section class="card about-section">
+            <h2>Welcome to the Course Portal</h2>
+            <p>
+                dashboard description
+            </p>
+            <br>
+            <p>
+                <strong>Managed by:</strong> faculty description
+            </p>
+        </section>
+
+        <section class="card table-container">
+            <h2>Recent Updates</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Main Content</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Aug 22, 2025</td>
+                        <td>Data Structures</td>
+                        <td><a href="#" class="content-link">link 1</a></td>
+                    </tr>
+                    <tr>
+                        <td>Aug 21, 2025</td>
+                        <td>Operating Systems</td>
+                        <td><a href="#" class="content-link">link 2</a></td>
+                    </tr>
+                    <tr>
+                        <td>Aug 20, 2025</td>
+                        <td>Database Management</td>
+                        <td><a href="#" class="content-link">link 3</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>
