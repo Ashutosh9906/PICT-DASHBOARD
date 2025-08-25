@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Logs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    #emails {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .email {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .email:last-child {
+      border-bottom: none;
+    }
+    .subject {
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    .from {
+      color: #555;
+      margin: 4px 0;
+    }
+    .date {
+      font-size: 0.9em;
+      color: #999;
+    }
+    .body {
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📩 Email Logs</h1>
+  <div id="emails">
+    <% if (messages && messages.length) { %>
+      <% messages.forEach(email => { %>
+        <div class="email">
+          <div class="subject"><%= email.subject %></div>
+          <div class="from"><%= email.from %></div>
+          <div class="date"><%= email.date %></div>
+          <div class="body"><%= email.body %></div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p>No emails yet.</p>
+    <% } %>
+  </div>
+
+  <script>
+    // Connect to SSE endpoint
+    const eventSource = new EventSource("/events");
+
+    eventSource.onmessage = function(event) {
+      const email = JSON.parse(event.data);
+      console.log("📩 New Email:", email);
+
+      const container = document.getElementById("emails");
+      const div = document.createElement("div");
+      div.className = "email";
+      div.innerHTML = `
+        <div class="subject">${email.subject}</div>
+        <div class="from">${email.from}</div>
+        <div class="date">${email.date}</div>
+        <div class="body">${email.body}</div>
+      `;
+      container.prepend(div);
+    };
+  </script>
+</body>
+</html>

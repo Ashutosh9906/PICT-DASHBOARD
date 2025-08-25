@@ -7,6 +7,37 @@ const { getMessage, parseMessage } = require("../utilities/messages")
 const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 const Message = require("../models/message");
 let lastHistoryId = null;
+let clients = [];
+
+function handleEvents(req, res) {
+    try {
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+        res.flushHeaders();
+
+        const clientId = Date.now();
+        const newClient = {
+            id: clientId,
+            res
+        };
+        clients.push(newClient);
+
+        req.on("close", () => {
+            console.log(`${clientId}, Connection Closed`);
+            clients = clients.filter(client => client.id !== clientId);
+        })
+    } catch (error) {
+        console.log("Error", error);
+        return res.status(400).json({ err: "Internal Server Error" })
+    }
+}
+
+function sendEventsToAll(newEmail) {
+    clients.forEach(client =>
+        client.res.write(`data: ${JSON.stringify(newEmail)}\n\n`)
+    );
+}
 
 const TOKEN_PATH = path.join(__dirname, "../json/token.json");
 if (fs.existsSync(TOKEN_PATH)) {
@@ -28,7 +59,7 @@ async function startWatch() {
         return console.log("Watch Response", response.data);
     } catch (error) {
         console.log("Error", error);
-        return res.status(400).json({ err: "Internal Server Error" })
+        throw error;
     }
 }
 
@@ -51,20 +82,23 @@ async function handleNewMail(req, res) {
                         const fullMessage = await getMessage(m.id);
                         const parsed = parseMessage(fullMessage);
                         parsed.body = parsed.body.replace(/\s+/g, " ").trim();
+
                         const { subject, from, date, body } = parsed;
                         console.log("NEW EMAIL:", parsed);
-                        await Message.create({
+
+                        const newEmail = await Message.create({
                             subject,
                             from,
                             date,
                             body
                         });
+                        sendEventsToAll(newEmail);
                     }
                 }
             }
         }
 
-        lastHistoryId = data.historyId; 
+        lastHistoryId = data.historyId;
 
     } catch (error) {
         console.log("Error", error);
@@ -77,7 +111,7 @@ async function handleListMessage(req, res) {
     try {
         const messages = await Message.find();
         console.log(messages);
-        return res.status(200).json({ messages });
+        return res.render("temp", { messages });
     } catch (error) {
         console.log("Error", error);
         return res.status(400).json({ err: "Internal Server Error" })
@@ -87,5 +121,6 @@ async function handleListMessage(req, res) {
 module.exports = {
     handleListMessage,
     startWatch,
-    handleNewMail
+    handleNewMail,
+    handleEvents
 }

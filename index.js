@@ -12,6 +12,9 @@ const oAuth2Client = require("./credentials");
 mongoose.connect(process.env.MONGO_URI)
         .then(() => console.log("MongoDB Connected"));
 
+app.set("view engine", "ejs");
+app.set("views", path.resolve("./views"));
+
 const authenticateRoute = require("./routes/authenticate");
 const messageRoute = require("./routes/messages");
 const { startWatch } = require("./controller/message");
