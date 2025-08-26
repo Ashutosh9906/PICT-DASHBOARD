@@ -64,11 +64,11 @@ async function startWatch() {
 }
 
 async function handleNewMail(req, res) {
+    const message = Buffer.from(req.body.message.data, "base64").toString("utf8")
+    const data = JSON.parse(message);
+    console.log("New Gmail Notification", data);
+    
     try {
-        const message = Buffer.from(req.body.message.data, "base64").toString("utf8")
-        const data = JSON.parse(message);
-        console.log("New Gmail Notification", data);
-
         if (lastHistoryId) {
             const historyResponse = await gmail.users.history.list({
                 userId: "me",
@@ -79,20 +79,23 @@ async function handleNewMail(req, res) {
             if (historyResponse.data.history) {
                 for (const history of historyResponse.data.history) {
                     for (const m of history.messages || []) {
-                        const fullMessage = await getMessage(m.id);
-                        const parsed = parseMessage(fullMessage);
-                        parsed.body = parsed.body.replace(/\s+/g, " ").trim();
+                        if (!await Message.exists({ gmailId: m.id })) {
+                            const fullMessage = await getMessage(m.id);
+                            const parsed = parseMessage(fullMessage);
+                            parsed.body = parsed.body.replace(/\s+/g, " ").trim();
 
-                        const { subject, from, date, body } = parsed;
-                        console.log("NEW EMAIL:", parsed);
+                            const { subject, from, date, body } = parsed;
+                            console.log("NEW EMAIL:", parsed);
 
-                        const newEmail = await Message.create({
-                            subject,
-                            from,
-                            date,
-                            body
-                        });
-                        sendEventsToAll(newEmail);
+                            const newEmail = await Message.create({
+                                gmailId: m.id,
+                                subject,
+                                from,
+                                date,
+                                body
+                            });
+                            sendEventsToAll(newEmail);
+                        }
                     }
                 }
             }
@@ -101,8 +104,32 @@ async function handleNewMail(req, res) {
         lastHistoryId = data.historyId;
 
     } catch (error) {
-        console.log("Error", error);
-        return res.status(400).json({ err: "Internal Server Error" })
+        if (error.code === 404) {
+            console.log("History expired, doing full sync...");
+            const messagesList = await gmail.users.messages.list({
+                userId: "me",
+                labelIds: ["INBOX"],
+                maxResults: 10
+            });
+
+            for (const m of messagesList.data.messages || []) {
+                if (!await Message.exists({ gmailId: m.id })) {
+                    const fullMessage = await getMessage(m.id);
+                    const parsed = parseMessage(fullMessage);
+                    parsed.body = parsed.body.replace(/\s+/g, " ").trim();
+                    await Message.create({
+                        gmailId: m.id, // 👈 unique Gmail ID
+                        subject: parsed.subject,
+                        from: parsed.from,
+                        date: parsed.date,
+                        body: parsed.body
+                    });
+                }
+            }
+
+            lastHistoryId = data.historyId; // reset sync point
+            return;
+        }
     }
     res.status(200).send("OK");
 }

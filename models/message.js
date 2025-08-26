@@ -1,6 +1,10 @@
 const { Schema, model } = require("mongoose")
 
 const messageSchema = new Schema({
+    gmailId: {
+        type: String,
+        required: true
+    },
     subject: {
         type: String,
         required: true
