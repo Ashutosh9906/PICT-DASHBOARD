@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,15 +13,15 @@
 <style>
     :root {
         --colorI: #f7f2eb;
-        --colorII: #ffffff;  
-        --colorIII: #dde3ff; 
-        --colorIV: #bad6eb;  
-        --colorV: #7096d1; 
-        --colorVI: #334eac;  
-        --colorVII: #081f5c; 
+        --colorII: #ffffff;
+        --colorIII: #dde3ff;
+        --colorIV: #bad6eb;
+        --colorV: #7096d1;
+        --colorVI: #334eac;
+        --colorVII: #081f5c;
         --shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
     }
-    
+
     * {
         margin: 0;
         padding: 0;
@@ -53,7 +54,7 @@
     .sidebar:hover {
         width: 180px;
     }
-    
+
     .sidebar .logo {
         font-size: 2rem;
         color: var(--colorVI);
@@ -83,25 +84,26 @@
         font-size: 1.8rem;
         transition: color 0.3s ease;
     }
-    
+
     .sidebar .nav-element .nav-text {
         font-weight: 500;
         transition: opacity 0.2s ease;
         opacity: 0;
     }
-    
+
     .sidebar:hover .nav-element .nav-text {
         opacity: 1;
     }
 
-    .sidebar .nav-element:hover, .sidebar .nav-element.active {
+    .sidebar .nav-element:hover,
+    .sidebar .nav-element.active {
         color: var(--colorVI);
     }
 
     .sidebar .nav-element.active {
         background-color: var(--colorIII);
     }
-    
+
     .sidebar .nav-element.active::before {
         content: '';
         position: absolute;
@@ -117,7 +119,8 @@
     .main-container {
         flex-grow: 1;
         padding: 2rem;
-        overflow-y: auto; /* Makes only this container scrollable */
+        overflow-y: auto;
+        /* Makes only this container scrollable */
         height: 100vh;
     }
 
@@ -150,10 +153,10 @@
         line-height: 1.6;
         color: #555;
     }
-    
+
     /* Table Styling */
     .table-container h2 {
-         margin-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
     }
 
     table {
@@ -166,7 +169,8 @@
         background-color: #f9f9f9;
     }
 
-    th, td {
+    th,
+    td {
         padding: 1rem;
         border-bottom: 1px solid #eee;
     }
@@ -191,7 +195,58 @@
     td .content-link:hover {
         text-decoration: underline;
     }
+
+    #emails {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .email {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        background: var(--colorII);
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease;
+    }
+
+    .email:hover {
+        transform: translateY(-2px);
+    }
+
+    .email-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .subject {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--colorVI);
+    }
+
+    .from {
+        color: #555;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .date {
+        font-size: 0.85rem;
+        color: #999;
+    }
+
+    .body {
+        color: #444;
+        line-height: 1.4;
+        font-size: 0.95rem;
+    }
 </style>
+
 <body>
 
     <aside class="sidebar">
@@ -234,7 +289,7 @@
             </p>
         </section>
 
-        <section class="card table-container">
+        <!-- <section class="card table-container">
             <h2>Recent Updates</h2>
             <table>
                 <thead>
@@ -262,7 +317,78 @@
                     </tr>
                 </tbody>
             </table>
+            <div id="emails">
+                <% if (messages && messages.length) { %>
+                    <% messages.forEach(email=> { %>
+                        <div class="email">
+                            <div class="subject">
+                                <%= email.subject %>
+                            </div>
+                            <div class="from">
+                                <%= email.from %>
+                            </div>
+                            <div class="date">
+                                <%= email.date %>
+                            </div>
+                            <div class="body">
+                                <%= email.body %>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <p>No emails yet.</p>
+                                <% } %>
+            </div>
+        </section> -->
+        <section class="card table-container">
+            <h2>Recent Updates</h2>
+            <div id="emails">
+                <% if (messages && messages.length) { %>
+                    <% messages.forEach(email=> { %>
+                        <div class="email">
+                            <div class="email-header">
+                                <div class="subject">
+                                    <%= email.subject %>
+                                </div>
+                                <div class="date">
+                                    <%= email.date %>
+                                </div>
+                            </div>
+                            <div class="from">
+                                <%= email.from %>
+                            </div>
+                            <div class="body">
+                                <%= email.body %>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <p>No emails yet.</p>
+                                <% } %>
+            </div>
         </section>
+
+        <script>
+            // Connect to SSE endpoint
+            const eventSource = new EventSource("/events");
+
+            eventSource.onmessage = function (event) {
+                const email = JSON.parse(event.data);
+                console.log("📩 New Email:", email);
+
+                const container = document.getElementById("emails");
+                const div = document.createElement("div");
+                div.className = "email";
+                div.innerHTML = `
+        <div class="subject">${email.subject}</div>
+        <div class="from">${email.from}</div>
+        <div class="date">${email.date}</div>
+        <div class="body">${email.body}</div>
+      `;
+                container.prepend(div);
+            };
+        </script>
     </main>
 </body>
+
 </html>

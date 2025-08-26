@@ -138,7 +138,7 @@ async function handleListMessage(req, res) {
     try {
         const messages = await Message.find();
         console.log(messages);
-        return res.render("temp", { messages });
+        return res.render("homepage", { messages });
     } catch (error) {
         console.log("Error", error);
         return res.status(400).json({ err: "Internal Server Error" })
