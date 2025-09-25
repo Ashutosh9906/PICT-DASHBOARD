@@ -1,10 +1,12 @@
-const { Router } = require("express");
-const { handleListMessage, handleNewMail, handleEvents } = require("../controller/message")
+import { Router } from "express";
+// import { handleListMessage, handleNewMail, handleEvents } from "../controller/message.js";
+import { handlegetMessage, handleNewmail } from "../controller/messageController.js";
+
 
 const router = Router();
 
-router.get("/", handleListMessage);
-router.get("/events", handleEvents)
-router.post("/newMail", handleNewMail);
+router.get("/", handlegetMessage);
+router.post("/events", handleNewmail)
+// router.post("/newMail", handleNewMail);
 
-module.exports = router;
+export default router;

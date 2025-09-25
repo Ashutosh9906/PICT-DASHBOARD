@@ -1,28 +1,29 @@
-const { Schema, model } = require("mongoose")
+import { Schema, model } from "mongoose";
 
 const messageSchema = new Schema({
-    gmailId: {
+    msgId: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     subject: {
         type: String,
-        required: true
+        // required: true
     },
     from: {
         type: String,
-        required: true
+        // required: true
     },
     date: {
         type: Date,
-        required: true
+        // required: true
     },
     body: {
         type: String,
-        required: true
+        // required: true
     }
 }, { timestamps: true });
 
 const Message = model("messages", messageSchema);
 
-module.exports = Message;
+export default Message;

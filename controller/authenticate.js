@@ -1,9 +1,9 @@
-const { google } = require("googleapis");
-const fs = require("fs");
-const path = require("path");
+import { google } from "googleapis";
+import fs from "fs";
+import path from "path";
 
-const oAuth2Client = require("../credentials");
-const TOKEN_PATH = path.join(__dirname, '..', 'json', 'token.json');
+import oAuth2Client from "../credentials.js";
+const TOKEN_PATH = path.join(new URL('.', import.meta.url).pathname, '..', 'json', 'token.json');
 
 async function handleAuthentication(req, res) {
     try {
@@ -36,7 +36,4 @@ async function handleVerifyEmail(req, res) {
     }
 }
 
-module.exports = {
-    handleAuthentication,
-    handleVerifyEmail
-}
+export { handleAuthentication, handleVerifyEmail };
