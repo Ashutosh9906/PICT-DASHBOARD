@@ -124,21 +124,20 @@ async function setLastHistoryId(id) {
 }
 
 function cleanBody(rawBody) {
-
     // Step 1: Decode quoted-printable
     let body = qp.decode(rawBody);
 
-    // Step 2: Normalize newlines
-    body = body.replace(/\r\n/g, " ");
+    // Step 2: Normalize newlines but keep them
+    body = body.replace(/\r\n?/g, "\n");
 
     // Step 3: Keep only text before '---'
     const index = body.indexOf('---');
     if (index !== -1) {
-        body = body.substring(0, index);  // everything before '---'
+        body = body.substring(0, index);
     }
 
-    // Step 4: Collapse multiple spaces
-    body = body.replace(/\s{2,}/g, " ");
+    // Step 4: Collapse multiple spaces (but not newlines!)
+    body = body.replace(/[ \t]{2,}/g, " ");
 
     // Step 5: Trim leading/trailing spaces
     body = body.trim();
@@ -146,7 +145,20 @@ function cleanBody(rawBody) {
     return body;
 }
 
+function formatBody(body) {
+  if (!body) return "";
 
+  // 1. Convert newlines to <br>
+  let formatted = body.replace(/\n/g, "<br>");
+
+  // 2. Convert any http/https links into clickable <a> tags
+  formatted = formatted.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+
+  return formatted;
+}
 
 export { 
     getMessage,
@@ -155,5 +167,6 @@ export {
     cleanBody,
     fetchMailById,
     getLastHistoryId,
-    setLastHistoryId
+    setLastHistoryId,
+    formatBody
 };

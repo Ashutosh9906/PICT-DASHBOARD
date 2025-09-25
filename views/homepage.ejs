@@ -318,8 +318,8 @@
                 </tbody>
             </table>
             <div id="emails">
-                <% if (messages && messages.length) { %>
-                    <% messages.forEach(email=> { %>
+                <% if (allMails && allMails.length) { %>
+                    <% allMails.forEach(email=> { %>
                         <div class="email">
                             <div class="subject">
                                 <%= email.subject %>
@@ -343,22 +343,22 @@
         <section class="card table-container">
             <h2>Recent Updates</h2>
             <div id="emails">
-                <% if (messages && messages.length) { %>
-                    <% messages.forEach(email=> { %>
+                <% if (allMails && allMails.length) { %>
+                    <% allMails.forEach(email=> { %>
                         <div class="email">
                             <div class="email-header">
                                 <div class="subject">
-                                    <%= email.subject %>
+                                    <pre><%= email.subject %></pre>
                                 </div>
-                                <div class="date">
-                                    <%= email.date %>
-                                </div>
+                                <!-- <div class="date">
+                                    <pre><%= email.date %></pre>
+                                </div> -->
                             </div>
-                            <div class="from">
-                                <%= email.from %>
-                            </div>
+                            <!-- <div class="from">
+                                <pre><%= email.from %></pre>
+                            </div> -->
                             <div class="body">
-                                <%= email.body %>
+                                <pre><%- email.body %></pre>
                             </div>
                         </div>
                         <% }) %>

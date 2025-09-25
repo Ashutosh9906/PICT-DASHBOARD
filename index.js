@@ -18,6 +18,7 @@ app.set("views", path.resolve("./views"));
 
 import authenticateRoute from "./routes/authenticate.js";
 import messageRoute from "./routes/messages.js";
+import userRoutes from "./routes/user.js"
 import { startWatch } from "./controller/messageController.js";
 // const { startWatch } = require("./utilities/messages.js")
 
@@ -30,6 +31,7 @@ startWatch()
 //To authenticate User
 app.use("/user", authenticateRoute);
 app.use("/messages", messageRoute);
+app.use("/user", userRoutes)
 
 app.listen(process.env.PORT, () => {
         console.log(`Server started at port ${process.env.PORT}`)
