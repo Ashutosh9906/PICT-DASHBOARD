@@ -83,15 +83,17 @@ async function handleNewmail(req, res) {
 
         const id = "68d540610262edc9c3bca11b"
         const users = await User.findById(id)
-        if(!users) throw new Error("users not found");
+        if (!users) throw new Error("users not found");
         let isEmail = false;
-        for(let email of users.allowedEmails){
-          if(email == from){
+        for (let email of users.allowedEmails) {
+          const parts = from.split('<');
+          const Email = parts[1] ? parts[1].split('>')[0] : parts[0];
+          if (email == Email) {
             isEmail = true;
           }
         }
 
-        if(isEmail){
+        if (isEmail) {
           await Message.create([{ msgId, subject, from, date, body }], { session });
           console.log("Inserted new email:", msgId);
         } else {
@@ -114,7 +116,7 @@ async function handleNewmail(req, res) {
 
     if (error.message === "OK") return res.status(200).send("OK");
     if (error.message === "Invalid message") return res.status(400).send("Invalid message");
-    if(error.message === "users not found") return res.status(404).json({ msg: "users with allowed users field not found" });
+    if (error.message === "users not found") return res.status(404).json({ msg: "users with allowed users field not found" });
 
     console.error("Error handling new mail:", error);
     res.status(500).send("Error");

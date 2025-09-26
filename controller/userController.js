@@ -28,18 +28,34 @@ async function handleAddAllowedUsers(req, res) {
         if (!user) throw new Error("Invalid Credentials");
         const match = await bcrypt.compare(password, user.password);
         if (!match) throw new Error("Invalid Password");
-        if (newEmail && !user.allowedEmails.includes(newEmail)) {
-            user.allowedEmails.push(newEmail);
-            await user.save({ session });
+        if(req.query.include == "true"){
+            if (newEmail && !user.allowedEmails.includes(newEmail)) {
+                user.allowedEmails.push(newEmail);
+                await user.save({ session });
+            }
+        } else if (req.query.remove == "true"){
+            let isMatch = false;
+            for(let email of user.allowedEmails){
+                if(email == newEmail){
+                    isMatch = true;
+                }
+            }
+            if(isMatch){
+                user.allowedEmails = user.allowedEmails.filter(e => e !== newEmail);
+                await user.save({ session });
+            } else {
+                throw new Error("No mail")
+            }
         }
         await session.commitTransaction();
         session.endSession();
-        return res.status(200).json({ msg: "Added new email", newEmail });
+        return res.status(200).json({ msg: "Operation performed successfull", newEmail });
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
         if (error.message == "Invalid Credentials") return res.status(404).json({ msg: "Invalid Credentials" });
         if (error.message == "Invalid Password") return res.status(400).json({ msg: "Invalid Password" })
+        if (error.message == "No mail") return res.status(404).json({ msg: "No such allowed email" });
         res.status(500).json({ msg: "Server error", error: error.message });
     }
 }
