@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage User Access</title>
+    <style>
+        /* Basic CSS Reset and Font Styling */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: popins, Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The main container for the form */
+        .manage-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Styling for the heading */
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        p {
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        /* Styling for the input fields */
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            font-size: 16px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        /* A simple separator line */
+        hr {
+            border: 0;
+            height: 1px;
+            background: #e0e0e0;
+            margin: 25px 0;
+        }
+
+
+        /* Container for the action buttons */
+        .button-group {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
+
+        /* General button styling */
+        .btn {
+            flex-grow: 1; /* Makes buttons share space equally */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Specific styling for the 'Add' button */
+        .btn-add {
+            background-color: #28a745; /* Green */
+        }
+
+        .btn-add:hover {
+            background-color: #218838;
+        }
+
+        /* Specific styling for the 'Remove' button */
+        .btn-remove {
+            background-color: #dc3545; /* Red */
+        }
+
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="manage-container">
+        <h1>Manage Users</h1>
+        <p>Add or remove users from the system.</p>
+
+        <form action="#" method="post">
+            <input type="email" id="admin-email" name="admin-email" class="input-field" placeholder="Your Admin Email" required>
+            <input type="password" id="admin-password" name="admin-password" class="input-field" placeholder="Your Admin Password" required>
+
+            <hr>
+
+            <input type="email" id="user-email" name="user-email" class="input-field" placeholder="Email to Add or Remove" required>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-add" name="action" value="add">Add User</button>
+                <button type="submit" class="btn btn-remove" name="action" value="remove">Remove User</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
