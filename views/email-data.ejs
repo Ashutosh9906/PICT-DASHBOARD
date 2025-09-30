@@ -1,100 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage User Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
     <style>
-        /* Basic CSS Reset and Font Styling */
-        body, html {
-            height: 100%;
+        :root {
+            --colorI: #f7f2eb;
+            --colorII: #ffffff;
+            --colorIII: #dde3ff;
+            --colorIV: #bad6eb;
+            --colorV: #7096d1;
+            --colorVI: #334eac;
+            --colorVII: #081f5c;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        * {
             margin: 0;
-            font-family: popins, Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--colorIV);
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
-        /* The main container for the form */
         .manage-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: var(--colorII);
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
             width: 100%;
             max-width: 400px;
             text-align: center;
         }
 
-        /* Styling for the heading */
         h1 {
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 24px;
+            margin-bottom: 0.5rem;
+            color: var(--colorVII);
+            font-size: 1.8rem;
+            font-weight: 700;
         }
 
         p {
-            margin-bottom: 30px;
-            color: #666;
+            margin-bottom: 2rem;
+            color: #555;
+            font-size: 0.95rem;
         }
 
-        /* Styling for the input fields */
         .input-field {
             width: 100%;
             padding: 12px 15px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            border-radius: 12px;
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         .input-field:focus {
             outline: none;
-            border-color: #007bff;
+            border-color: var(--colorV);
         }
-        
-        /* A simple separator line */
+
         hr {
             border: 0;
             height: 1px;
             background: #e0e0e0;
-            margin: 25px 0;
+            margin: 1.5rem 0;
         }
 
-
-        /* Container for the action buttons */
         .button-group {
             display: flex;
-            gap: 10px; /* Space between buttons */
+            gap: 10px;
+            margin-top: 0.5rem;
         }
 
-        /* General button styling */
         .btn {
-            flex-grow: 1; /* Makes buttons share space equally */
+            flex-grow: 1;
             padding: 12px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             color: white;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            box-shadow: var(--shadow);
         }
-        
-        /* Specific styling for the 'Add' button */
+
         .btn-add {
-            background-color: #28a745; /* Green */
+            background-color: #28a745;
         }
 
         .btn-add:hover {
             background-color: #218838;
         }
 
-        /* Specific styling for the 'Remove' button */
         .btn-remove {
-            background-color: #dc3545; /* Red */
+            background-color: #dc3545;
         }
 
         .btn-remove:hover {
@@ -102,26 +117,54 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="manage-container">
         <h1>Manage Users</h1>
         <p>Add or remove users from the system.</p>
 
-        <form action="#" method="post">
-            <input type="email" id="admin-email" name="admin-email" class="input-field" placeholder="Your Admin Email" required>
-            <input type="password" id="admin-password" name="admin-password" class="input-field" placeholder="Your Admin Password" required>
+        <div class="input-group">
+            <input type="email" id="admin-email" class="input-field" placeholder="Your Admin Email" required>
+            <input type="password" id="admin-password" class="input-field" placeholder="Your Admin Password" required>
+        </div>
 
-            <hr>
+        <hr>
 
-            <input type="email" id="user-email" name="user-email" class="input-field" placeholder="Email to Add or Remove" required>
+        <div class="input-group">
+            <input type="email" id="user-email" class="input-field" placeholder="Email to Add or Remove" required>
+        </div>
 
-            <div class="button-group">
-                <button type="submit" class="btn btn-add" name="action" value="add">Add User</button>
-                <button type="submit" class="btn btn-remove" name="action" value="remove">Remove User</button>
-            </div>
-        </form>
+        <div class="button-group">
+            <button class="btn btn-add" id="btn-add">Add User</button>
+            <button class="btn btn-remove" id="btn-remove">Remove User</button>
+        </div>
     </div>
 
+    <script>
+        document.getElementById("btn-add").addEventListener("click", async () => {
+            const email = document.getElementById("admin-email").value;
+            const password = document.getElementById("admin-password").value;
+            const newEmail = document.getElementById("user-email").value;
+            await fetch("/userAdmin/AllowedUser?include=true", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password, newEmail })
+            });
+        });
+
+        document.getElementById("btn-remove").addEventListener("click", async () => {
+            const email = document.getElementById("admin-email").value;
+            const password = document.getElementById("admin-password").value;
+            const newEmail = document.getElementById("user-email").value;
+            await fetch("/userAdmin/AllowedUser?remove=true", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password, newEmail })
+            });
+        });
+    </script>
+
 </body>
+
 </html>

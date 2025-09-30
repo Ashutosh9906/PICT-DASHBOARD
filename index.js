@@ -31,7 +31,7 @@ startWatch()
 //To authenticate User
 app.use("/user", authenticateRoute);
 app.use("/messages", messageRoute);
-app.use("/user", userRoutes)
+app.use("/userAdmin", userRoutes)
 
 app.listen(process.env.PORT, () => {
         console.log(`Server started at port ${process.env.PORT}`)
