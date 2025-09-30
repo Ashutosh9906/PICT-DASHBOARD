@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professor's Dashboard</title>
+    <title>ESDM - Course Page</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
         border-right: 1px solid #e0e0e0;
         border-radius: 16px;
         width: 80px;
-        height: 100%;
+        height: calc(100vh - 32px); /* Adjusted for margin */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -114,47 +114,12 @@
         height: 100%;
         background-color: var(--colorVI);
     }
-    .dropdown {
-        position: relative; /* This is crucial for positioning the dropdown content */
-        display: inline-block;
-    }
-
-    /* The dropdown content (hidden by default) */
-    .dropdown-content {
-        display: none; /* Hide the dropdown by default */
-        position: absolute; /* Position it relative to the .dropdown container */
-        background-color: #f1f1f1;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1; /* Make sure it appears above other content */
-        border-radius: 8px; /* Optional: for rounded corners */
-    }
-
-    /* Links inside the dropdown */
-    .dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block; /* Make the entire area clickable */
-        text-align: left;
-    }
-
-    /* Change color of dropdown links on hover */
-    .dropdown-content a:hover {
-        background-color: #dde3ff; /* Using a color from your theme */
-    }
-
-    /* The magic rule: Show the dropdown menu on hover */
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
 
     /* --- Main Content Area --- */
     .main-container {
         flex-grow: 1;
         padding: 2rem;
         overflow-y: auto;
-        /* Makes only this container scrollable */
         height: 100vh;
     }
 
@@ -180,61 +145,14 @@
     .card h2 {
         font-size: 1.4rem;
         color: var(--colorVI);
-        margin-bottom: 1rem;
-    }
-
-    .card p {
-        line-height: 1.6;
-        color: #555;
-    }
-
-    /* Table Styling */
-    .table-container h2 {
         margin-bottom: 1.5rem;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
-
-    thead {
-        background-color: #f9f9f9;
-    }
-
-    th,
-    td {
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
-    }
-
-    th {
-        font-weight: 600;
-        color: var(--colorVII);
-        text-transform: uppercase;
-        font-size: 0.85rem;
-    }
-
-    tbody tr:hover {
-        background-color: #f7faff;
-    }
-
-    td .content-link {
-        color: var(--colorV);
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    td .content-link:hover {
-        text-decoration: underline;
-    }
-
-    #emails {
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-        overflow-y: auto;
+    /* Email Container Specifics */
+    #emails-container {
+        max-height: 65vh; /* Set a max height for the email list */
+        overflow-y: auto; /* Enable scrolling within this container */
+        padding-right: 10px; /* Add some space for the scrollbar */
     }
 
     .email {
@@ -243,12 +161,17 @@
         border: 1px solid #eee;
         border-radius: 12px;
         background: var(--colorII);
-        box-shadow: var(--shadow);
-        transition: transform 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .email:hover {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .email:last-child {
+        margin-bottom: 0;
     }
 
     .email-header {
@@ -260,24 +183,19 @@
 
     .subject {
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 1.1rem;
         color: var(--colorVI);
-    }
-
-    .from {
-        color: #555;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
     }
 
     .date {
         font-size: 0.85rem;
         color: #999;
+        font-weight: 500;
     }
 
     .body {
         color: #444;
-        line-height: 1.4;
+        line-height: 1.5;
         font-size: 0.95rem;
     }
 </style>
@@ -289,11 +207,11 @@
             <span class="material-icons-sharp">school</span>
         </div>
         <nav>
-            <a class="nav-element active" href="#home">
+            <a class="nav-element" href="#home">
                 <span class="material-icons-sharp">dashboard</span>
                 <span class="nav-text">Dashboard</span>
             </a>
-            <a class="nav-element" href="#courses">
+            <a class="nav-element active" href="#courses">
                 <span class="material-icons-sharp">book</span>
                 <span class="nav-text">Courses</span>
             </a>
@@ -310,69 +228,56 @@
 
     <main class="main-container">
         <header>
-            <h1>PICT Dashboard</h1>
+            <h1>ESDM (Embedded Systems Design & Modeling)</h1>
         </header>
 
-        <section class="card about-section">
-            <h2>Welcome to the Course Portal</h2>
-            <p>
-                dashboard description
-            </p>
-            <br>
-            <p>
-                <strong>Managed by:</strong> faculty description
-            </p>
-        </section>
+        <section class="card">
+            <h2>Important Communications & Updates</h2>
+            
+            <div id="emails-container">
+                <div class="email">
+                    <div class="email-header">
+                        <div class="subject">Lab 3 Submission Deadline Extended</div>
+                        <div class="date">Sep 28, 2025</div>
+                    </div>
+                    <div class="body">
+                        Dear students, the deadline for Lab 3 (Interfacing with I2C devices) has been extended to October 5th, 2025, at 11:59 PM. Please make sure to upload your reports and code to the portal before the new deadline.
+                    </div>
+                </div>
 
-        <section class="card table-container">
-            <h2>Recent Updates</h2>
-            <div id="emails">
-                <% if (allMails && allMails.length) { %>
-                    <% allMails.forEach(email=> { %>
-                        <div class="email">
-                            <div class="email-header">
-                                <div class="subject">
-                                    <pre><%= email.subject %></pre>
-                                </div>
-                                <!-- <div class="date">
-                                    <pre><%= email.date %></pre>
-                                </div> -->
-                            </div>
-                            <!-- <div class="from">
-                                <pre><%= email.from %></pre>
-                            </div> -->
-                            <div class="body">
-                                <pre><%- email.body %></pre>
-                            </div>
-                        </div>
-                        <% }) %>
-                            <% } else { %>
-                                <p>No emails yet.</p>
-                                <% } %>
+                <div class="email">
+                    <div class="email-header">
+                        <div class="subject">Mid-Term Exam Schedule and Syllabus</div>
+                        <div class="date">Sep 25, 2025</div>
+                    </div>
+                    <div class="body">
+                        The mid-term examination for ESDM is scheduled for October 15th, 2025. The syllabus will cover all topics from Module 1 to Module 4, including microcontroller architectures and memory organization.
+                    </div>
+                </div>
+
+                <div class="email">
+                    <div class="email-header">
+                        <div class="subject">Resource Added: Lecture Slides on RTOS</div>
+                        <div class="date">Sep 22, 2025</div>
+                    </div>
+                    <div class="body">
+                        The presentation slides for today's lecture on Real-Time Operating Systems (RTOS) have been uploaded to the course materials section.
+                    </div>
+                </div>
+
+                 <div class="email">
+                    <div class="email-header">
+                        <div class="subject">REMINDER: Group Project Proposals Due Friday</div>
+                        <div class="date">Sep 20, 2025</div>
+                    </div>
+                    <div class="body">
+                        This is a reminder that your group project proposals are due this Friday, September 24th. Please submit a one-page summary of your project idea, team members, and required hardware.
+                    </div>
+                </div>
             </div>
         </section>
-
-        <script>
-            // Connect to SSE endpoint
-            const eventSource = new EventSource("/events");
-
-            eventSource.onmessage = function (event) {
-                const email = JSON.parse(event.data);
-                console.log("📩 New Email:", email);
-
-                const container = document.getElementById("emails");
-                const div = document.createElement("div");
-                div.className = "email";
-                div.innerHTML = `
-        <div class="subject">${email.subject}</div>
-        <div class="from">${email.from}</div>
-        <div class="date">${email.date}</div>
-        <div class="body">${email.body}</div>
-      `;
-                container.prepend(div);
-            };
-        </script>
     </main>
+
 </body>
 
 </html>
