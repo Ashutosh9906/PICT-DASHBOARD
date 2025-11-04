@@ -114,20 +114,26 @@
         height: 100%;
         background-color: var(--colorVI);
     }
+
     .dropdown {
-        position: relative; /* This is crucial for positioning the dropdown content */
+        position: relative;
+        /* This is crucial for positioning the dropdown content */
         display: inline-block;
     }
 
     /* The dropdown content (hidden by default) */
     .dropdown-content {
-        display: none; /* Hide the dropdown by default */
-        position: absolute; /* Position it relative to the .dropdown container */
+        display: none;
+        /* Hide the dropdown by default */
+        position: absolute;
+        /* Position it relative to the .dropdown container */
         background-color: #f1f1f1;
         min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1; /* Make sure it appears above other content */
-        border-radius: 8px; /* Optional: for rounded corners */
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        /* Make sure it appears above other content */
+        border-radius: 8px;
+        /* Optional: for rounded corners */
     }
 
     /* Links inside the dropdown */
@@ -135,13 +141,15 @@
         color: black;
         padding: 12px 16px;
         text-decoration: none;
-        display: block; /* Make the entire area clickable */
+        display: block;
+        /* Make the entire area clickable */
         text-align: left;
     }
 
     /* Change color of dropdown links on hover */
     .dropdown-content a:hover {
-        background-color: #dde3ff; /* Using a color from your theme */
+        background-color: #dde3ff;
+        /* Using a color from your theme */
     }
 
     /* The magic rule: Show the dropdown menu on hover */
@@ -280,6 +288,90 @@
         line-height: 1.4;
         font-size: 0.95rem;
     }
+
+    /* === Sidebar Dropdown (Simple Roll Down, Clean) === */
+    .dropdown {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.8rem 1.5rem;
+        color: #7a7a7a;
+        cursor: pointer;
+        transition: background-color 0.25s ease;
+    }
+
+    .dropdown-toggle:hover {
+        background-color: var(--colorIII);
+        color: var(--colorVI);
+    }
+
+    /* Make sure icons always visible */
+    .sidebar .dropdown .material-icons-sharp {
+        font-size: 1.8rem;
+    }
+
+    /* Dropdown menu hidden by default */
+    .dropdown-menu {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: all 0.3s ease;
+        background-color: var(--colorII);
+        border-left: 4px solid var(--colorVI);
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Roll down cleanly on hover */
+    .dropdown:hover .dropdown-menu {
+        max-height: 100px;
+        /* Enough for two items */
+        opacity: 1;
+    }
+
+    /* Submenu links styling */
+    .sub-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.6rem 3.5rem;
+        text-decoration: none;
+        color: #555;
+        font-size: 0.9rem;
+        transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .sub-link:hover {
+        background-color: var(--colorIII);
+        color: var(--colorVI);
+    }
+
+    /* Small arrow rotation for clarity */
+    .arrow {
+        font-size: 1.2rem;
+        color: var(--colorV);
+        transition: transform 0.3s ease;
+    }
+
+    .dropdown:hover .arrow {
+        transform: rotate(180deg);
+    }
+
+    /* Fix spacing — no gaps after dropdown */
+    nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
 </style>
 
 <body>
@@ -293,20 +385,38 @@
                 <span class="material-icons-sharp">dashboard</span>
                 <span class="nav-text">Dashboard</span>
             </a>
-            <a class="nav-element" href="#courses">
-                <span class="material-icons-sharp">book</span>
-                <span class="nav-text">Courses</span>
-            </a>
+
+            <!-- ✅ Dropdown for Courses -->
+            <div class="nav-element dropdown">
+                <div class="dropdown-toggle">
+                    <span class="material-icons-sharp">book</span>
+                    <span class="nav-text">Courses</span>
+                    <span class="material-icons-sharp arrow">expand_more</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="#dsa" class="sub-link">
+                        <span class="material-icons-sharp">code</span>
+                        <span>DSA</span>
+                    </a>
+                    <a href="#esdl" class="sub-link">
+                        <span class="material-icons-sharp">memory</span>
+                        <span>ESDL</span>
+                    </a>
+                </div>
+            </div>
+
             <a class="nav-element" href="#grades">
                 <span class="material-icons-sharp">assessment</span>
                 <span class="nav-text">Grades</span>
             </a>
+
             <a class="nav-element" href="#messages">
                 <span class="material-icons-sharp">mail_outline</span>
                 <span class="nav-text">Messages</span>
             </a>
         </nav>
     </aside>
+
 
     <main class="main-container">
         <header>
