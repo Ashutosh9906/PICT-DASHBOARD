@@ -123,6 +123,15 @@ async function handleNewmail(req, res) {
   }
 }
 
+async function handleGetSpecificMessage(req, res){
+  try {
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Internal Server Error" })
+  }
+}
+
 
 // ---------------------- Fetch top 10 messages manually ----------------------
 async function handlegetMessage(req, res) {
@@ -151,5 +160,6 @@ async function handlegetMessage(req, res) {
 export {
   handlegetMessage,
   handleNewmail,
-  startWatch
+  startWatch,
+  handleGetSpecificMessage
 }

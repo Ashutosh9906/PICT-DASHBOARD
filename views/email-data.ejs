@@ -115,6 +115,27 @@
         .btn-remove:hover {
             background-color: #c82333;
         }
+
+        .popup {
+            position: fixed;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            /* green for success */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: top 0.5s ease, opacity 0.5s ease;
+            opacity: 0;
+            z-index: 9999;
+        }
+
+        .popup.show {
+            top: 20px;
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -141,28 +162,77 @@
         </div>
     </div>
 
+    <div id="popup-message" class="popup"></div>
+
     <script>
         document.getElementById("btn-add").addEventListener("click", async () => {
             const email = document.getElementById("admin-email").value;
             const password = document.getElementById("admin-password").value;
             const newEmail = document.getElementById("user-email").value;
-            await fetch("/userAdmin/AllowedUser?include=true", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, newEmail })
-            });
-        });
 
-        document.getElementById("btn-remove").addEventListener("click", async () => {
+            try {
+                const response = await fetch("/userAdmin/AllowedUser?include=true", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password, newEmail }),
+                });
+
+                const data = await response.json();
+
+                // ✅ Show popup message
+                showPopup(data.msg || "Operation successful!");
+
+                if (response.ok) {
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = "/messages";
+                    }, 1500);
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                showPopup("Something went wrong!", true);
+            }
+        });
+        document.getElementById("btn-add").addEventListener("click", async () => {
             const email = document.getElementById("admin-email").value;
             const password = document.getElementById("admin-password").value;
             const newEmail = document.getElementById("user-email").value;
-            await fetch("/userAdmin/AllowedUser?remove=true", {
+
+            try {
+                const response = await fetch("/userAdmin/AllowedUser?remove=true", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password, newEmail })
             });
+
+                const data = await response.json();
+
+                // ✅ Show popup message
+                showPopup(data.msg || "Operation successful!");
+
+                if (response.ok) {
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = "/messages";
+                    }, 1500);
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                showPopup("Something went wrong!", true);
+            }
         });
+
+        function showPopup(message, isError = false) {
+            const popup = document.getElementById("popup-message");
+            popup.textContent = message;
+            popup.style.background = isError ? "#e74c3c" : "#4caf50"; // red or green
+            popup.classList.add("show");
+
+            // Auto-hide after 3s
+            setTimeout(() => {
+                popup.classList.remove("show");
+            }, 3000);
+        }
     </script>
 
 </body>

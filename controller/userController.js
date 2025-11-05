@@ -49,7 +49,7 @@ async function handleAddAllowedUsers(req, res) {
         }
         await session.commitTransaction();
         session.endSession();
-        return res.status(200).json({ msg: "Operation performed successfull", newEmail });
+        return res.status(200).json({ msg: "Emails Edited Successfully" });
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
