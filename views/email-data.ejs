@@ -59,7 +59,8 @@
             font-size: 0.95rem;
         }
 
-        .input-field {
+        .input-field,
+        .dropdown {
             width: 100%;
             padding: 12px 15px;
             margin-bottom: 15px;
@@ -67,9 +68,12 @@
             border-radius: 12px;
             font-size: 16px;
             box-sizing: border-box;
+            background-color: #fff;
+            transition: border-color 0.3s ease;
         }
 
-        .input-field:focus {
+        .input-field:focus,
+        .dropdown:focus {
             outline: none;
             border-color: var(--colorV);
         }
@@ -122,7 +126,6 @@
             left: 50%;
             transform: translateX(-50%);
             background: #4caf50;
-            /* green for success */
             color: white;
             padding: 12px 24px;
             border-radius: 6px;
@@ -135,6 +138,42 @@
         .popup.show {
             top: 20px;
             opacity: 1;
+        }
+
+        .input-field,
+        .dropdown {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #fff;
+            transition: all 0.3s ease;
+            color: #333;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%237096d1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px 16px;
+            cursor: pointer;
+        }
+
+        .dropdown:focus {
+            outline: none;
+            border-color: var(--colorV);
+            box-shadow: 0 0 0 3px rgba(112, 150, 209, 0.2);
+        }
+
+        .dropdown option {
+            color: #333;
+            font-size: 15px;
+        }
+
+        /* Placeholder-style for first option */
+        .dropdown option[value=""] {
+            color: #aaa;
         }
     </style>
 </head>
@@ -154,6 +193,15 @@
 
         <div class="input-group">
             <input type="email" id="user-email" class="input-field" placeholder="Email to Add or Remove" required>
+
+            <!-- ✅ New Dropdown for Type -->
+            <select id="user-type" class="dropdown" required>
+                <option value="" disabled selected>Select Type</option>
+                <option value="DSA">DSA</option>
+                <option value="ESDL">ESDL</option>
+                <option value="CNT">CNT</option>
+            </select>
+
         </div>
 
         <div class="button-group">
@@ -169,21 +217,19 @@
             const email = document.getElementById("admin-email").value;
             const password = document.getElementById("admin-password").value;
             const newEmail = document.getElementById("user-email").value;
-
+            const type = document.getElementById("user-type").value;
+            
             try {
                 const response = await fetch("/userAdmin/AllowedUser?include=true", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password, newEmail }),
+                    body: JSON.stringify({ email, password, newEmail, type }),
                 });
 
                 const data = await response.json();
-
-                // ✅ Show popup message
                 showPopup(data.msg || "Operation successful!");
 
                 if (response.ok) {
-                    // Redirect after a short delay
                     setTimeout(() => {
                         window.location.href = "/messages";
                     }, 1500);
@@ -193,25 +239,24 @@
                 showPopup("Something went wrong!", true);
             }
         });
-        document.getElementById("btn-add").addEventListener("click", async () => {
+
+        document.getElementById("btn-remove").addEventListener("click", async () => {
             const email = document.getElementById("admin-email").value;
             const password = document.getElementById("admin-password").value;
             const newEmail = document.getElementById("user-email").value;
+            const type = document.getElementById("user-type").value;
 
             try {
                 const response = await fetch("/userAdmin/AllowedUser?remove=true", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, newEmail })
-            });
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password, newEmail, type })
+                });
 
                 const data = await response.json();
-
-                // ✅ Show popup message
                 showPopup(data.msg || "Operation successful!");
 
                 if (response.ok) {
-                    // Redirect after a short delay
                     setTimeout(() => {
                         window.location.href = "/messages";
                     }, 1500);
@@ -225,13 +270,9 @@
         function showPopup(message, isError = false) {
             const popup = document.getElementById("popup-message");
             popup.textContent = message;
-            popup.style.background = isError ? "#e74c3c" : "#4caf50"; // red or green
+            popup.style.background = isError ? "#e74c3c" : "#4caf50";
             popup.classList.add("show");
-
-            // Auto-hide after 3s
-            setTimeout(() => {
-                popup.classList.remove("show");
-            }, 3000);
+            setTimeout(() => popup.classList.remove("show"), 3000);
         }
     </script>
 

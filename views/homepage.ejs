@@ -394,16 +394,17 @@
                     <span class="material-icons-sharp arrow">expand_more</span>
                 </div>
                 <div class="dropdown-menu">
-                    <a href="#dsa" class="sub-link">
+                    <a href="#dsa" class="sub-link" data-type="DSA">
                         <span class="material-icons-sharp">code</span>
                         <span>DSA</span>
                     </a>
-                    <a href="#esdl" class="sub-link">
+                    <a href="#esdl" class="sub-link" data-type="ESDL">
                         <span class="material-icons-sharp">memory</span>
                         <span>ESDL</span>
                     </a>
                 </div>
             </div>
+
 
             <a class="nav-element" href="#grades">
                 <span class="material-icons-sharp">assessment</span>
@@ -444,9 +445,9 @@
                                 <div class="subject">
                                     <pre><%= email.subject %></pre>
                                 </div>
-                                <!-- <div class="date">
+                                <div class="date">
                                     <pre><%= email.date %></pre>
-                                </div> -->
+                                </div>
                             </div>
                             <!-- <div class="from">
                                 <pre><%= email.from %></pre>
@@ -481,6 +482,15 @@
       `;
                 container.prepend(div);
             };
+
+            document.querySelectorAll(".sub-link").forEach(link => {
+                link.addEventListener("click", event => {
+                    event.preventDefault();
+                    const type = event.currentTarget.dataset.type;
+                    window.location.href = `/messages/getSpecificMessage?type=${type}`;
+                });
+            });
+
         </script>
     </main>
 </body>

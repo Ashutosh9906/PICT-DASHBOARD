@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { required } from "zod/mini";
 
 const userSchema = new Schema({
     email: {
@@ -11,7 +12,12 @@ const userSchema = new Schema({
         required: true
     },
     allowedEmails: {
-        type: [String],
+        type: [
+            {
+                email: {type: String, required: true},
+                type: {type: String, required: true}
+            }
+        ],
         default: []
     }
 }, { timestamps: true })

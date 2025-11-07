@@ -104,23 +104,23 @@ async function fetchMailById(msgId) {
 
         body = cleanBody(body);
 
-        return {subject, from, date, body};
+        return { subject, from, date, body };
     } catch (error) {
         console.log(error);
     }
 }
 
 async function getLastHistoryId() {
-  const doc = await lastHistoryId.findById('gmail_history');
-  return doc?.lastHistoryId || null;
+    const doc = await lastHistoryId.findById('gmail_history');
+    return doc?.lastHistoryId || null;
 }
 
 async function setLastHistoryId(id) {
-  await lastHistoryId.findByIdAndUpdate(
-    'gmail_history',
-    { lastHistoryId: id },
-    { upsert: true, new: true }
-  );
+    await lastHistoryId.findByIdAndUpdate(
+        'gmail_history',
+        { lastHistoryId: id },
+        { upsert: true, new: true }
+    );
 }
 
 function cleanBody(rawBody) {
@@ -146,21 +146,32 @@ function cleanBody(rawBody) {
 }
 
 function formatBody(body) {
-  if (!body) return "";
+    if (!body) return "";
 
-  // 1. Convert newlines to <br>
-  let formatted = body.replace(/\n/g, "<br>");
+    // 1. Convert newlines to <br>
+    let formatted = body.replace(/\n/g, "<br>");
 
-  // 2. Convert any http/https links into clickable <a> tags
-  formatted = formatted.replace(
-    /(https?:\/\/[^\s<]+)/g,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-  );
+    // 2. Convert any http/https links into clickable <a> tags
+    formatted = formatted.replace(
+        /(https?:\/\/[^\s<]+)/g,
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
 
-  return formatted;
+    return formatted;
 }
 
-export { 
+function formatDate(date) {
+    const oldDate = new Date(date);
+    const formatted = oldDate.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+    });
+
+    return formatted // 👉 "Nov 7, 2025"
+}
+
+export {
     getMessage,
     parseMessage,
     getTop10Messages,
@@ -168,5 +179,6 @@ export {
     fetchMailById,
     getLastHistoryId,
     setLastHistoryId,
-    formatBody
+    formatBody,
+    formatDate
 };

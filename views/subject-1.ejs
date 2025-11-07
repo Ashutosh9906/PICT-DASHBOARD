@@ -228,52 +228,34 @@
 
     <main class="main-container">
         <header>
-            <h1>ESDL ( Essential Skill Development Lab )</h1>
+            <h1><%= type %></h1>
         </header>
 
-        <section class="card">
-            <h2>Important Communications & Updates</h2>
-            
-            <div id="emails-container">
-                <div class="email">
-                    <div class="email-header">
-                        <div class="subject">Lab 3 Submission Deadline Extended</div>
-                        <div class="date">Sep 28, 2025</div>
-                    </div>
-                    <div class="body">
-                        Dear students, the deadline for Lab 3 (Interfacing with I2C devices) has been extended to October 5th, 2025, at 11:59 PM. Please make sure to upload your reports and code to the portal before the new deadline.
-                    </div>
-                </div>
-
-                <div class="email">
-                    <div class="email-header">
-                        <div class="subject">Mid-Term Exam Schedule and Syllabus</div>
-                        <div class="date">Sep 25, 2025</div>
-                    </div>
-                    <div class="body">
-                        The mid-term examination for ESDM is scheduled for October 15th, 2025. The syllabus will cover all topics from Module 1 to Module 4, including microcontroller architectures and memory organization.
-                    </div>
-                </div>
-
-                <div class="email">
-                    <div class="email-header">
-                        <div class="subject">Resource Added: Lecture Slides on RTOS</div>
-                        <div class="date">Sep 22, 2025</div>
-                    </div>
-                    <div class="body">
-                        The presentation slides for today's lecture on Real-Time Operating Systems (RTOS) have been uploaded to the course materials section.
-                    </div>
-                </div>
-
-                 <div class="email">
-                    <div class="email-header">
-                        <div class="subject">REMINDER: Group Project Proposals Due Friday</div>
-                        <div class="date">Sep 20, 2025</div>
-                    </div>
-                    <div class="body">
-                        This is a reminder that your group project proposals are due this Friday, September 24th. Please submit a one-page summary of your project idea, team members, and required hardware.
-                    </div>
-                </div>
+        <section class="card table-container">
+            <h2>Recent Updates</h2>
+            <div id="emails">
+                <% if (filteredMails && filteredMails.length) { %>
+                    <% filteredMails.forEach(email=> { %>
+                        <div class="email">
+                            <div class="email-header">
+                                <div class="subject">
+                                    <pre><%= email.subject %></pre>
+                                </div>
+                                <div class="date">
+                                    <pre><%= email.date %></pre>
+                                </div>
+                            </div>
+                            <!-- <div class="from">
+                                <pre><%= email.from %></pre>
+                            </div> -->
+                            <div class="body">
+                                <pre><%- email.body %></pre>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <p>No emails yet.</p>
+                                <% } %>
             </div>
         </section>
     </main>

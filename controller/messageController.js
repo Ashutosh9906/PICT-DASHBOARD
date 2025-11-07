@@ -11,6 +11,7 @@ import {
   getLastHistoryId,
   setLastHistoryId,
   formatBody,
+  formatDate,
 } from "../utilities/messages.js";
 import Message from "../models/message.js";
 import oAuth2Client from "../credentials.js";
@@ -81,20 +82,22 @@ async function handleNewmail(req, res) {
         if (exists) continue;
         const { subject, from, date, body } = await fetchMailById(msgId);
 
-        const id = "68d540610262edc9c3bca11b"
+        const id = "690dd78a2e76fd68c8462caf"
         const users = await User.findById(id)
         if (!users) throw new Error("users not found");
         let isEmail = false;
-        for (let email of users.allowedEmails) {
+        let type;
+        for (let allowed of users.allowedEmails) {
           const parts = from.split('<');
           const Email = parts[1] ? parts[1].split('>')[0] : parts[0];
-          if (email == Email) {
+          if (allowed.email == Email) {
             isEmail = true;
+            type = allowed.type;
           }
         }
 
         if (isEmail) {
-          await Message.create([{ msgId, subject, from, date, body }], { session });
+          await Message.create([{ msgId, subject, from, date, body, type }], { session });
           console.log("Inserted new email:", msgId);
         } else {
           console.log("Didn't insert the email: ", msgId);
@@ -125,7 +128,29 @@ async function handleNewmail(req, res) {
 
 async function handleGetSpecificMessage(req, res){
   try {
-    
+    let type = req.query.type;
+    const allMails = await Message.find().sort({ createdAt: -1 });
+
+    let filteredMails = [];
+    // filteredMails.push({
+    //   type
+    // })
+
+    if(allMails){
+      allMails.forEach(u => {
+        if(u.type == type){
+          filteredMails.push({
+            subject: u.subject,
+            body: u.body,
+            from: u.from,
+            date: formatDate(u.date)
+          })
+        }
+      })
+    }
+
+    // return res.status(200).json({ filteredMails });
+    return res.render("subject-1", { filteredMails, type });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Internal Server Error" })
@@ -150,11 +175,13 @@ async function handlegetMessage(req, res) {
   //         console.log(newEmail);
   //     } 
   // }
-  const allMails = await Message.find().sort({ createdAt: -1 });
+  const allMails = await Message.find().sort({ createdAt: -1 }).lean();
   for (let m of allMails) {
     m.body = formatBody(m.body);
+    m.date = formatDate(m.date);
   }
   return res.render("homepage", { allMails });
+  // return res.status(200).json({ allMails });
 }
 
 export {
@@ -163,3 +190,6 @@ export {
   startWatch,
   handleGetSpecificMessage
 }
+
+///while sending to the ejs page send only the needed 
+// part don't send data like _id or anything which it is not using

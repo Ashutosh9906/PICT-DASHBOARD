@@ -21,7 +21,7 @@ async function handleAddAllowedUsers(req, res) {
     const session = await mongoose.startSession();
     try {
         session.startTransaction();
-        const { email, password, newEmail } = res.locals.validated;
+        const { email, password, newEmail, type } = res.locals.validated;
         const user = await User.findOne({
             email
         }).session(session);
@@ -30,19 +30,35 @@ async function handleAddAllowedUsers(req, res) {
         if (!match) throw new Error("Invalid Password");
         if(req.query.include == "true"){
             if (newEmail && !user.allowedEmails.includes(newEmail)) {
-                user.allowedEmails.push(newEmail);
-                await user.save({ session });
+                // user.allowedEmails.push(newEmail);
+                // await user.save({ session });
+                await User.updateOne(
+                    { email },
+                    {
+                        $push: {
+                            allowedEmails: { email: newEmail, type }
+                        }
+                    },
+                    { session }
+                );
             }
         } else if (req.query.remove == "true"){
             let isMatch = false;
-            for(let email of user.allowedEmails){
-                if(email == newEmail){
+            for(let allowed of user.allowedEmails){
+                if(allowed.email == newEmail){
                     isMatch = true;
                 }
             }
             if(isMatch){
-                user.allowedEmails = user.allowedEmails.filter(e => e !== newEmail);
-                await user.save({ session });
+                await User.updateOne(
+                    { email },
+                    {
+                        $pull: {
+                            allowedEmails: { email: newEmail, type }
+                        }
+                    },
+                    { session }
+                );
             } else {
                 throw new Error("No mail")
             }
