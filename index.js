@@ -36,3 +36,10 @@ app.use("/userAdmin", userRoutes)
 app.listen(process.env.PORT, () => {
         console.log(`Server started at port ${process.env.PORT}`)
 });    
+
+
+//Pagination 
+//In memory cache layer
+//Queue all the incoming 
+//cors
+//central error handling middleware

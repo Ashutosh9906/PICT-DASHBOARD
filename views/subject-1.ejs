@@ -43,7 +43,8 @@
         border-right: 1px solid #e0e0e0;
         border-radius: 16px;
         width: 80px;
-        height: calc(100vh - 32px); /* Adjusted for margin */
+        height: calc(100vh - 32px);
+        /* Adjusted for margin */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -150,9 +151,12 @@
 
     /* Email Container Specifics */
     #emails-container {
-        max-height: 65vh; /* Set a max height for the email list */
-        overflow-y: auto; /* Enable scrolling within this container */
-        padding-right: 10px; /* Add some space for the scrollbar */
+        max-height: 65vh;
+        /* Set a max height for the email list */
+        overflow-y: auto;
+        /* Enable scrolling within this container */
+        padding-right: 10px;
+        /* Add some space for the scrollbar */
     }
 
     .email {
@@ -169,7 +173,7 @@
         transform: translateY(-3px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    
+
     .email:last-child {
         margin-bottom: 0;
     }
@@ -197,6 +201,35 @@
         color: #444;
         line-height: 1.5;
         font-size: 0.95rem;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1.5rem;
+    }
+
+    .page-btn {
+        background: var(--colorII);
+        border: 1px solid #ccc;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        color: var(--colorVI);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .page-btn:hover {
+        background: var(--colorIII);
+    }
+
+    .page-btn.active {
+        background: var(--colorVI);
+        color: white;
+        border-color: var(--colorVI);
     }
 </style>
 
@@ -228,14 +261,16 @@
 
     <main class="main-container">
         <header>
-            <h1><%= type %></h1>
+            <h1>
+                <%= type %>
+            </h1>
         </header>
 
         <section class="card table-container">
             <h2>Recent Updates</h2>
             <div id="emails">
-                <% if (filteredMails && filteredMails.length) { %>
-                    <% filteredMails.forEach(email=> { %>
+                <% if (allMails && allMails.length) { %>
+                    <% allMails.forEach(email=> { %>
                         <div class="email">
                             <div class="email-header">
                                 <div class="subject">
@@ -258,6 +293,24 @@
                                 <% } %>
             </div>
         </section>
+        <div class="pagination">
+            <% if (totalPages> 1) { %>
+                <% if (currentPage> 1) { %>
+                    <a href="/messages/getSpecificMessage?type=<%= type %>&page=<%= currentPage - 1 %>&limit=5" class="page-btn">Previous</a>
+                    <% } %>
+
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <a href="/messages/getSpecificMessage?type=<%= type %>&page=<%= i %>&limit=5" class="page-btn <%= i === currentPage ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+                            <% } %>
+
+                                <% if (currentPage < totalPages) { %>
+                                    <a href="/messages/getSpecificMessage?type=<%= type %>&page=<%= currentPage + 1 %>&limit=5" class="page-btn">Next</a>
+                                    <% } %>
+                                        <% } %>
+        </div>
+
     </main>
 
 </body>

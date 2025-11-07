@@ -15,7 +15,7 @@ import {
 } from "../utilities/messages.js";
 import Message from "../models/message.js";
 import oAuth2Client from "../credentials.js";
-import mongoose from "mongoose";
+import mongoose, { skipMiddlewareFunction } from "mongoose";
 import User from "../models/users.js";
 
 // Gmail client
@@ -126,31 +126,31 @@ async function handleNewmail(req, res) {
   }
 }
 
-async function handleGetSpecificMessage(req, res){
+async function handleGetSpecificMessage(req, res) {
   try {
+
+    const limit = 1;
+    let page = parseInt(req.query.page);
     let type = req.query.type;
-    const allMails = await Message.find().sort({ createdAt: -1 });
 
-    let filteredMails = [];
-    // filteredMails.push({
-    //   type
-    // })
+    let offset = (page - 1) * limit;
 
-    if(allMails){
-      allMails.forEach(u => {
-        if(u.type == type){
-          filteredMails.push({
-            subject: u.subject,
-            body: u.body,
-            from: u.from,
-            date: formatDate(u.date)
-          })
-        }
-      })
-    }
+    const totalMessages = await Message.countDocuments({ type });
+    const totalPages = Math.ceil(totalMessages / limit);
 
-    // return res.status(200).json({ filteredMails });
-    return res.render("subject-1", { filteredMails, type });
+    const allMails = await Message.find({ type })
+      .select("subject from date body type -_id")
+      .skip(offset)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    allMails.forEach(u => {
+      u.date = formatDate(u.date);
+    })
+
+    // return res.status(200).json({ allMails });
+    return res.render("subject-1", { allMails, type, totalPages, currentPage: page });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Internal Server Error" })
@@ -175,12 +175,27 @@ async function handlegetMessage(req, res) {
   //         console.log(newEmail);
   //     } 
   // }
-  const allMails = await Message.find().sort({ createdAt: -1 }).lean();
+
+  const limit = 1;
+  let page = parseInt(req.query.page);
+
+  let offset = (page - 1) * limit;
+
+  const totalMessages = await Message.countDocuments();
+  const totalPages = Math.ceil(totalMessages / limit);
+
+  const allMails = await Message.find()
+    .select("subject from date body -_id")
+    .skip(offset)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    .lean();
+
   for (let m of allMails) {
     m.body = formatBody(m.body);
     m.date = formatDate(m.date);
   }
-  return res.render("homepage", { allMails });
+  return res.render("homepage", { allMails, totalPages, currentPage: page });
   // return res.status(200).json({ allMails });
 }
 

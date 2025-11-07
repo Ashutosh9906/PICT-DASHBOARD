@@ -372,6 +372,35 @@
         flex-direction: column;
         gap: 0;
     }
+
+    .pagination {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1.5rem;
+    }
+
+    .page-btn {
+        background: var(--colorII);
+        border: 1px solid #ccc;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        color: var(--colorVI);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .page-btn:hover {
+        background: var(--colorIII);
+    }
+
+    .page-btn.active {
+        background: var(--colorVI);
+        color: white;
+        border-color: var(--colorVI);
+    }
 </style>
 
 <body>
@@ -462,6 +491,26 @@
                                 <% } %>
             </div>
         </section>
+        <div class="pagination">
+            <% if (totalPages> 1) { %>
+                <% if (currentPage> 1) { %>
+                    <a href="/messages?page=<%= currentPage - 1 %>&limit=5"
+                        class="page-btn">Previous</a>
+                    <% } %>
+
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <a href="/messages?page=<%= i %>&limit=5"
+                                class="page-btn <%= i === currentPage ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+                            <% } %>
+
+                                <% if (currentPage < totalPages) { %>
+                                    <a href="/messages?page=<%= currentPage + 1 %>&limit=5"
+                                        class="page-btn">Next</a>
+                                    <% } %>
+                                        <% } %>
+        </div>
 
         <script>
             // Connect to SSE endpoint
