@@ -44,12 +44,13 @@
         border-radius: 16px;
         width: 80px;
         height: calc(100vh - 32px);
-        /* Adjusted for margin */
         display: flex;
         flex-direction: column;
         align-items: center;
         padding: 1.5rem 0;
-        transition: width 0.3s ease;
+        transition: width 0.3s ease, transform 0.3s ease;
+        position: relative;
+        z-index: 1000;
     }
 
     .sidebar:hover {
@@ -79,6 +80,7 @@
         position: relative;
         overflow: hidden;
         white-space: nowrap;
+        transition: all 0.3s ease;
     }
 
     .sidebar .nav-element .material-icons-sharp {
@@ -108,7 +110,6 @@
     .sidebar .nav-element.active::before {
         content: '';
         position: absolute;
-
         left: 0;
         top: 0;
         width: 5px;
@@ -116,22 +117,166 @@
         background-color: var(--colorVI);
     }
 
+    /* === Dropdown Styling === */
+    .dropdown {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem 1.5rem;
+        color: #7a7a7a;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        white-space: nowrap;
+    }
+
+    .dropdown-toggle:hover {
+        color: var(--colorVI);
+        background-color: var(--colorIII);
+    }
+
+    .dropdown-toggle .material-icons-sharp {
+        font-size: 1.8rem;
+    }
+
+    .dropdown-toggle .nav-text {
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .sidebar:hover .dropdown-toggle .nav-text {
+        opacity: 1;
+    }
+
+    /* Arrow icon */
+    .arrow {
+        font-size: 1.2rem;
+        color: var(--colorV);
+        transition: transform 0.3s ease, opacity 0.2s ease;
+        opacity: 0;
+        margin-left: auto;
+    }
+
+    .sidebar:hover .arrow {
+        opacity: 1;
+    }
+
+    .dropdown.open .arrow {
+        transform: rotate(180deg);
+    }
+
+    /* Dropdown menu */
+    .dropdown-menu {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: all 0.3s ease;
+        background-color: var(--colorII);
+    }
+
+    .dropdown.open .dropdown-menu {
+        max-height: 200px;
+        opacity: 1;
+    }
+
+    /* Show dropdown on hover */
+    .dropdown:hover .dropdown-menu {
+        max-height: 200px;
+        opacity: 1;
+    }
+
+    .dropdown:hover .arrow {
+        transform: rotate(180deg);
+    }
+
+    /* Submenu links */
+    .sub-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.6rem 1.5rem 0.6rem 3rem;
+        text-decoration: none;
+        color: #555;
+        font-size: 0.9rem;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+    }
+
+    .sub-link .material-icons-sharp {
+        font-size: 1.4rem;
+    }
+
+    .sub-link span:last-child {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .sidebar:hover .sub-link span:last-child {
+        opacity: 1;
+    }
+
+    .sub-link:hover {
+        background-color: var(--colorIII);
+        color: var(--colorVI);
+    }
+
+    /* Mobile menu toggle button */
+    .mobile-menu-toggle {
+        display: none;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        z-index: 1001;
+        background-color: var(--colorVI);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle:active {
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    .mobile-menu-toggle .material-icons-sharp {
+        font-size: 1.4rem;
+        display: block;
+    }
+
     /* --- Main Content Area --- */
     .main-container {
         flex-grow: 1;
         padding: 2rem;
         overflow-y: auto;
+        overflow-x: hidden;
         height: 100vh;
+        width: 100%;
+        max-width: 100%;
     }
 
     header {
         margin-bottom: 2rem;
+        position: relative;
     }
 
     header h1 {
         font-size: 2.2rem;
         color: var(--colorVII);
         font-weight: 700;
+        word-wrap: break-word;
     }
 
     /* Card Styling for Sections */
@@ -141,22 +286,72 @@
         border-radius: 16px;
         box-shadow: var(--shadow);
         margin-bottom: 2rem;
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .card h2 {
         font-size: 1.4rem;
         color: var(--colorVI);
+        margin-bottom: 1rem;
+        word-wrap: break-word;
+    }
+
+    .card p {
+        line-height: 1.6;
+        color: #555;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* Table Styling */
+    .table-container h2 {
         margin-bottom: 1.5rem;
     }
 
-    /* Email Container Specifics */
-    #emails-container {
-        max-height: 65vh;
-        /* Set a max height for the email list */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #f9f9f9;
+    }
+
+    th,
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        font-weight: 600;
+        color: var(--colorVII);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    tbody tr:hover {
+        background-color: #f7faff;
+    }
+
+    td .content-link {
+        color: var(--colorV);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    td .content-link:hover {
+        text-decoration: underline;
+    }
+
+    #emails {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
         overflow-y: auto;
-        /* Enable scrolling within this container */
-        padding-right: 10px;
-        /* Add some space for the scrollbar */
+        overflow-x: hidden;
     }
 
     .email {
@@ -165,17 +360,14 @@
         border: 1px solid #eee;
         border-radius: 12px;
         background: var(--colorII);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease;
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .email:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .email:last-child {
-        margin-bottom: 0;
+        transform: translateY(-2px);
     }
 
     .email-header {
@@ -183,24 +375,51 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
 
     .subject {
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 1rem;
         color: var(--colorVI);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .subject pre,
+    .date pre,
+    .from pre,
+    .body pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+    }
+
+    .from {
+        color: #555;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     .date {
         font-size: 0.85rem;
         color: #999;
-        font-weight: 500;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     .body {
         color: #444;
-        line-height: 1.5;
+        line-height: 1.4;
         font-size: 0.95rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
     }
 
     .pagination {
@@ -209,6 +428,7 @@
         justify-content: center;
         align-items: center;
         margin-top: 1.5rem;
+        flex-wrap: wrap;
     }
 
     .page-btn {
@@ -231,39 +451,260 @@
         color: white;
         border-color: var(--colorVI);
     }
+
+    /* ========================================
+       RESPONSIVE DESIGN - TABLET
+       ======================================== */
+    @media screen and (max-width: 1024px) {
+        header h1 {
+            font-size: 1.8rem;
+        }
+
+        .main-container {
+            padding: 1.5rem;
+        }
+
+        .card {
+            padding: 1.2rem;
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+        }
+
+        .sidebar {
+            width: 70px;
+        }
+
+        .sidebar:hover {
+            width: 160px;
+        }
+    }
+
+    /* ========================================
+       RESPONSIVE DESIGN - MOBILE
+       ======================================== */
+    @media screen and (max-width: 768px) {
+        body {
+            flex-direction: column;
+        }
+
+        .mobile-menu-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            flex: 1;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            margin: 0;
+            width: 260px;
+            height: 100vh;
+            border-radius: 0;
+            transform: translateX(-100%);
+            z-index: 999;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.mobile-open {
+            transform: translateX(0);
+        }
+
+        .sidebar .nav-element .nav-text,
+        .sidebar .dropdown-toggle .nav-text,
+        .sidebar .arrow,
+        .sidebar .sub-link span:last-child {
+            opacity: 1;
+        }
+
+        .sidebar:hover {
+            width: 260px;
+        }
+
+        .main-container {
+            padding: 1rem;
+            padding-top: 1rem;
+            margin-left: 0;
+            max-width: 100vw;
+        }
+
+        .card {
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+        }
+
+        .email {
+            padding: 0.8rem;
+        }
+
+        .subject {
+            font-size: 0.9rem;
+        }
+
+        .date {
+            font-size: 0.75rem;
+        }
+
+        .body {
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+    }
+
+    /* ========================================
+       RESPONSIVE DESIGN - SMALL MOBILE
+       ======================================== */
+    @media screen and (max-width: 480px) {
+        .mobile-menu-toggle {
+            padding: 0.5rem;
+        }
+
+        .mobile-menu-toggle .material-icons-sharp {
+            font-size: 1.3rem;
+        }
+
+        .main-container {
+            padding: 0.75rem;
+            padding-top: 0.75rem;
+            max-width: 100vw;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+        }
+
+        .card {
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h2 {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .card p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .email {
+            padding: 0.7rem;
+        }
+
+        .email-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+
+        .subject {
+            font-size: 0.85rem;
+        }
+
+        .date {
+            font-size: 0.7rem;
+        }
+
+        .body {
+            font-size: 0.8rem;
+        }
+
+        .page-btn {
+            padding: 0.35rem 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        .sidebar {
+            width: 240px;
+        }
+
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .sidebar .logo {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar nav {
+            gap: 1rem;
+        }
+    }
+
+    /* Overlay for mobile menu */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    @media screen and (max-width: 768px) {
+        .sidebar-overlay.active {
+            display: block;
+        }
+    }
 </style>
+<!-- <%- include('partials/styles') %> -->
 
 <body>
 
-    <aside class="sidebar">
-        <div class="logo">
-            <span class="material-icons-sharp">school</span>
-        </div>
-        <nav>
-            <a class="nav-element" href="#home">
-                <span class="material-icons-sharp">dashboard</span>
-                <span class="nav-text">Dashboard</span>
-            </a>
-            <a class="nav-element active" href="#courses">
-                <span class="material-icons-sharp">book</span>
-                <span class="nav-text">Courses</span>
-            </a>
-            <a class="nav-element" href="#grades">
-                <span class="material-icons-sharp">assessment</span>
-                <span class="nav-text">Grades</span>
-            </a>
-            <a class="nav-element" href="#messages">
-                <span class="material-icons-sharp">mail_outline</span>
-                <span class="nav-text">Messages</span>
-            </a>
-        </nav>
-    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <%- include('partials/sidebar') %>
 
     <main class="main-container">
         <header>
             <h1>
                 <%= type %>
             </h1>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span class="material-icons-sharp">menu</span>
+            </button>
         </header>
 
         <section class="card table-container">
@@ -280,9 +721,6 @@
                                     <pre><%= email.date %></pre>
                                 </div>
                             </div>
-                            <!-- <div class="from">
-                                <pre><%= email.from %></pre>
-                            </div> -->
                             <div class="body">
                                 <pre><%- email.body %></pre>
                             </div>
@@ -312,6 +750,27 @@
         </div>
 
     </main>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (mobileMenuToggle && sidebar && sidebarOverlay) {
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('active');
+            });
+        }
+    </script>
+
+    <%- include('partials/sidebarScripts') %>
 
 </body>
 

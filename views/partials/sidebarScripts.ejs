@@ -1,0 +1,9 @@
+<script>
+    document.querySelectorAll(".sub-link").forEach(link => {
+        link.addEventListener("click", event => {
+            event.preventDefault();
+            const type = event.currentTarget.dataset.type;
+            window.location.href = `/messages/getSpecificMessage?type=${type}`;
+        });
+    });
+</script>
