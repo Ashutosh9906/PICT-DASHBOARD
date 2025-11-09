@@ -12,6 +12,7 @@ import {
   setLastHistoryId,
   formatBody,
   formatDate,
+  isCacheEmpty,
 } from "../utilities/messages.js";
 import Message from "../models/message.js";
 import oAuth2Client from "../credentials.js";
@@ -98,6 +99,9 @@ async function handleNewmail(req, res) {
 
         if (isEmail) {
           await Message.create([{ msgId, subject, from, date, body, type }], { session });
+          cache.mails = [];
+          cache.totalMessages = -1;
+          console.log("printing empty cache\n", cache);
           console.log("Inserted new email:", msgId);
         } else {
           console.log("Didn't insert the email: ", msgId);
@@ -130,7 +134,7 @@ async function handleGetSpecificMessage(req, res) {
   try {
 
     const limit = 1;
-    let page = parseInt(req.query.page);
+    let page = parseInt(req.query.page) || 1;
     let type = req.query.type;
 
     let offset = (page - 1) * limit;
@@ -157,6 +161,10 @@ async function handleGetSpecificMessage(req, res) {
   }
 }
 
+let cache = {
+  mails: [],
+  totalMessages: -1
+};
 
 // ---------------------- Fetch top 10 messages manually ----------------------
 async function handlegetMessage(req, res) {
@@ -176,25 +184,47 @@ async function handlegetMessage(req, res) {
   //     } 
   // }
 
-  const limit = 1;
-  let page = parseInt(req.query.page);
+  // currently changes to 5
+  const limit = 2;
+  let page = parseInt(req.query.page) || 1;
+  let allMails, totalMessages
 
   let offset = (page - 1) * limit;
 
-  const totalMessages = await Message.countDocuments();
-  const totalPages = Math.ceil(totalMessages / limit);
+  if (!isCacheEmpty(cache)) {
+    if (page === 1) {
+      allMails = cache.mails;
+      totalMessages = cache.totalMessages;
+      console.log("send cache\n", cache);
+    } else {
+      totalMessages = await Message.countDocuments();
 
-  const allMails = await Message.find()
-    .select("subject from date body -_id")
-    .skip(offset)
-    .limit(limit)
-    .sort({ createdAt: -1 })
-    .lean();
-
+      allMails = await Message.find()
+        .select("subject from date body -_id")
+        .skip(offset)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .lean();
+    }
+  } else {
+    totalMessages = await Message.countDocuments();
+    allMails = await Message.find()
+      .select("subject from date body -_id")
+      .skip(offset)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean();
+    if (page === 1) {
+      cache.mails = allMails;
+      cache.totalMessages = totalMessages;
+      console.log("set cache\n", cache);
+    }
+  }
   for (let m of allMails) {
     m.body = formatBody(m.body);
     m.date = formatDate(m.date);
   }
+  const totalPages = Math.ceil(totalMessages / limit);
   return res.render("homepage", { allMails, totalPages, currentPage: page });
   // return res.status(200).json({ allMails });
 }
@@ -205,6 +235,3 @@ export {
   startWatch,
   handleGetSpecificMessage
 }
-
-///while sending to the ejs page send only the needed 
-// part don't send data like _id or anything which it is not using

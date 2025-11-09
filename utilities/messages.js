@@ -171,6 +171,10 @@ function formatDate(date) {
     return formatted // 👉 "Nov 7, 2025"
 }
 
+function isCacheEmpty(cache){
+  return cache.mails.length === 0 && cache.totalMessages === -1;
+}
+
 export {
     getMessage,
     parseMessage,
@@ -180,5 +184,6 @@ export {
     getLastHistoryId,
     setLastHistoryId,
     formatBody,
-    formatDate
+    formatDate,
+    isCacheEmpty
 };
