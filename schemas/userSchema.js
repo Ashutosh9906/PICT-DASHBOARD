@@ -4,7 +4,6 @@ const addNewUser = z.object({
     email: z.string().email({ message: "Invalid Email" }),
     password: z.string().min(4, "Password too short"),
     newEmail: z.string().email({ message: "Invalid Email" }),
-    type: z.string().min(3, "Invalid Type")
 })
 
 const adminDetais = z.object({

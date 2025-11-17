@@ -21,7 +21,7 @@ async function handleAddAllowedUsers(req, res) {
     const session = await mongoose.startSession();
     try {
         session.startTransaction();
-        const { email, password, newEmail, type } = res.locals.validated;
+        const { email, password, newEmail } = res.locals.validated;
         const user = await User.findOne({
             email
         }).session(session);
@@ -36,7 +36,7 @@ async function handleAddAllowedUsers(req, res) {
                     { email },
                     {
                         $push: {
-                            allowedEmails: { email: newEmail, type }
+                            allowedEmails: newEmail
                         }
                     },
                     { session }
@@ -45,7 +45,7 @@ async function handleAddAllowedUsers(req, res) {
         } else if (req.query.remove == "true"){
             let isMatch = false;
             for(let allowed of user.allowedEmails){
-                if(allowed.email == newEmail){
+                if(allowed == newEmail){
                     isMatch = true;
                 }
             }
@@ -54,7 +54,7 @@ async function handleAddAllowedUsers(req, res) {
                     { email },
                     {
                         $pull: {
-                            allowedEmails: { email: newEmail, type }
+                            allowedEmails: newEmail
                         }
                     },
                     { session }

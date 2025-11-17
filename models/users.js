@@ -12,12 +12,7 @@ const userSchema = new Schema({
         required: true
     },
     allowedEmails: {
-        type: [
-            {
-                email: {type: String, required: true},
-                type: {type: String, required: true}
-            }
-        ],
+        type: [String],
         default: []
     }
 }, { timestamps: true })

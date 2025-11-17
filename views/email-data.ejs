@@ -195,12 +195,12 @@
             <input type="email" id="user-email" class="input-field" placeholder="Email to Add or Remove" required>
 
             <!-- ✅ New Dropdown for Type -->
-            <select id="user-type" class="dropdown" required>
+            <!-- <select id="user-type" class="dropdown" required>
                 <option value="" disabled selected>Select Type</option>
                 <option value="DSA">DSA</option>
                 <option value="ESDL">ESDL</option>
                 <option value="CNT">CNT</option>
-            </select>
+            </select> -->
 
         </div>
 
@@ -217,13 +217,12 @@
             const email = document.getElementById("admin-email").value;
             const password = document.getElementById("admin-password").value;
             const newEmail = document.getElementById("user-email").value;
-            const type = document.getElementById("user-type").value;
             
             try {
                 const response = await fetch("/userAdmin/AllowedUser?include=true", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password, newEmail, type }),
+                    body: JSON.stringify({ email, password, newEmail }),
                 });
 
                 const data = await response.json();
@@ -244,13 +243,12 @@
             const email = document.getElementById("admin-email").value;
             const password = document.getElementById("admin-password").value;
             const newEmail = document.getElementById("user-email").value;
-            const type = document.getElementById("user-type").value;
 
             try {
                 const response = await fetch("/userAdmin/AllowedUser?remove=true", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password, newEmail, type })
+                    body: JSON.stringify({ email, password, newEmail })
                 });
 
                 const data = await response.json();

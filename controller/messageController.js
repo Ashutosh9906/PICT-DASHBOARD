@@ -23,20 +23,43 @@ import User from "../models/users.js";
 const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
 
 // ---------------------- Gmail Watch ----------------------
+let watchTimeout = null;
+
 async function startWatch() {
   try {
     const res = await gmail.users.watch({
       userId: "me",
       requestBody: {
         labelIds: ["INBOX"],
-        topicName: "projects/gmail-tracer/topics/gmail-notifications", // your Pub/Sub topic
+        topicName: "projects/gmail-tracer/topics/gmail-notifications",
       },
     });
 
     await setLastHistoryId(res.data.historyId);
     console.log("Gmail watch started:", res.data);
+
+    // Clear any existing timer
+    if (watchTimeout) clearTimeout(watchTimeout);
+
+    // Google gives expiration in ms (UNIX timestamp)
+    const expirationTime = Number(res.data.expiration);
+
+    // Refresh 1 minute before expiration
+    const refreshIn = expirationTime - Date.now() - 60_000;
+
+    console.log("Next refresh in (ms):", refreshIn);
+
+    if (refreshIn > 0) {
+      watchTimeout = setTimeout(() => {
+        console.log("⏳ Refreshing Gmail watch before expiration...");
+        startWatch();
+      }, refreshIn);
+    }
   } catch (error) {
     console.error("Error starting Gmail watch:", error);
+
+    // Retry after 1 minute if watch call fails
+    setTimeout(startWatch, 60_000);
   }
 }
 
@@ -83,22 +106,21 @@ async function handleNewmail(req, res) {
         if (exists) continue;
         const { subject, from, date, body } = await fetchMailById(msgId);
 
-        const id = "690dd78a2e76fd68c8462caf"
-        const users = await User.findById(id)
+        const email = "ashutoshgandule1@gmail.com"
+        const users = await User.findOne({ email })
         if (!users) throw new Error("users not found");
         let isEmail = false;
         let type;
         for (let allowed of users.allowedEmails) {
           const parts = from.split('<');
           const Email = parts[1] ? parts[1].split('>')[0] : parts[0];
-          if (allowed.email == Email) {
+          if (allowed == Email) {
             isEmail = true;
-            type = allowed.type;
           }
         }
 
         if (isEmail) {
-          await Message.create([{ msgId, subject, from, date, body, type }], { session });
+          await Message.create([{ msgId, subject: subject.toLowerCase(), from, date, body }], { session });
           cache.mails = [];
           cache.totalMessages = -1;
           console.log("printing empty cache\n", cache);
@@ -130,19 +152,20 @@ async function handleNewmail(req, res) {
   }
 }
 
+// ---------------------- Handle Display Specific Message ----------------------
 async function handleGetSpecificMessage(req, res) {
   try {
 
     const limit = 1;
     let page = parseInt(req.query.page) || 1;
-    let type = req.query.type;
+    let type = req.query.type.toLowerCase();
 
     let offset = (page - 1) * limit;
 
-    const totalMessages = await Message.countDocuments({ type });
+    const totalMessages = await Message.countDocuments({ subject: type });
     const totalPages = Math.ceil(totalMessages / limit);
 
-    const allMails = await Message.find({ type })
+    const allMails = await Message.find({ subject: type })
       .select("subject from date body type -_id")
       .skip(offset)
       .limit(limit)
@@ -150,11 +173,13 @@ async function handleGetSpecificMessage(req, res) {
       .lean();
 
     allMails.forEach(u => {
+      u.body = formatBody(u.body);
       u.date = formatDate(u.date);
+      u.subject = u.subject.toUpperCase();
     })
 
     // return res.status(200).json({ allMails });
-    return res.render("subject-1", { allMails, type, totalPages, currentPage: page });
+    return res.render("subject-1", { allMails, type: type.toUpperCase(), totalPages, currentPage: page });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Internal Server Error" })
@@ -168,23 +193,6 @@ let cache = {
 
 // ---------------------- Fetch top 10 messages manually ----------------------
 async function handlegetMessage(req, res) {
-  // const body = await getTop10Messages();
-  // for (let mail of body) {
-  //     mail.body = cleanBody(mail.body);
-  //     const ismail = await Message.findOne({ msgId: mail.msgId });
-  //     if(!ismail){
-  //         newEmail = await Message.create({
-  //             msgId: mail.msgId,
-  //             subject: mail.subject || "",
-  //             from: mail.from,
-  //             date: mail.date || "",
-  //             body: mail.body
-  //         });
-  //         console.log(newEmail);
-  //     } 
-  // }
-
-  // currently changes to 5
   const limit = 2;
   let page = parseInt(req.query.page) || 1;
   let allMails, totalMessages
@@ -214,18 +222,19 @@ async function handlegetMessage(req, res) {
       .limit(limit)
       .sort({ createdAt: -1 })
       .lean();
+    for (let m of allMails) {
+      m.body = formatBody(m.body);
+      m.date = formatDate(m.date);
+      m.subject = m.subject.toUpperCase();
+    }
     if (page === 1) {
       cache.mails = allMails;
       cache.totalMessages = totalMessages;
       console.log("set cache\n", cache);
     }
   }
-  for (let m of allMails) {
-    m.body = formatBody(m.body);
-    m.date = formatDate(m.date);
-  }
   const totalPages = Math.ceil(totalMessages / limit);
-  return res.render("homepage", { allMails, totalPages, currentPage: page });
+  return res.render("homepage", { allMails, totalPages, currentPage: page, totalMessages });
   // return res.status(200).json({ allMails });
 }
 

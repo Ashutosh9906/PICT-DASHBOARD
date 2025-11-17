@@ -23,7 +23,7 @@ import authenticateRoute from "./routes/authenticate.js";
 import messageRoute from "./routes/messages.js";
 import userRoutes from "./routes/user.js"
 import { startWatch } from "./controller/messageController.js";
-// const { startWatch } = require("./utilities/messages.js")
+import errorHandling from "./middlewares/errorHandler.js";
 
 app.use(express.json());
 oAuth2Client.setCredentials(token)
@@ -31,6 +31,8 @@ oAuth2Client.setCredentials(token)
 //Start Watch on INBOX
 startWatch()
 
+//central error handling system
+app.use(errorHandling)
 
 //To authenticate User
 app.use("/user", authenticateRoute);
@@ -47,3 +49,7 @@ app.listen(process.env.PORT, () => {
 //Queue all the incoming 
 //cors
 //central error handling middleware
+//token expires after an hour  leading to -> ngrok: 401:unauthorized (error)
+//use referesh token expires after an period of 7 days in testing mode
+//startwatch will also be valid for 1 hour it expire after 1 hour 
+//revoke the startwatch and the token

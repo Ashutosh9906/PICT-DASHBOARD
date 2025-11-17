@@ -1,5 +1,4 @@
 import { Schema, model } from "mongoose";
-import { required } from "zod/mini";
 
 const messageSchema = new Schema({
     msgId: {
@@ -9,7 +8,7 @@ const messageSchema = new Schema({
     },
     subject: {
         type: String,
-        // required: true
+        required: true
     },
     from: {
         type: String,
@@ -21,12 +20,8 @@ const messageSchema = new Schema({
     },
     body: {
         type: String,
-        // required: true
-    },
-    type: {
-        type: String,
         required: true
-    }
+    },
 }, { timestamps: true });
 
 const Message = model("messages", messageSchema);

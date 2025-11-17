@@ -20,6 +20,8 @@
         --colorVI: #334eac;
         --colorVII: #081f5c;
         --shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+        --new-message-bg: #fff3cd;
+        --new-message-border: #ffc107;
     }
 
     * {
@@ -295,6 +297,33 @@
         color: var(--colorVI);
         margin-bottom: 1rem;
         word-wrap: break-word;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .new-count-badge {
+        background: var(--new-message-border);
+        color: #fff;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
     }
 
     .card p {
@@ -346,36 +375,89 @@
         text-decoration: underline;
     }
 
+    /* NEW: Email Grid Layout for larger screens */
     #emails {
         max-width: 100%;
         margin: 0;
         padding: 0;
         overflow-y: auto;
         overflow-x: hidden;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Multi-column layout for larger screens */
+    @media screen and (min-width: 1200px) {
+        #emails {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media screen and (min-width: 1600px) {
+        #emails {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
     .email {
         padding: 1rem;
-        margin-bottom: 1rem;
         border: 1px solid #eee;
         border-radius: 12px;
         background: var(--colorII);
         box-shadow: var(--shadow);
-        transition: transform 0.2s ease;
+        transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.2s ease;
         max-width: 100%;
         overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
     .email:hover {
         transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    /* New message styling */
+    .email.new-message {
+        background: var(--new-message-bg);
+        border: 2px solid var(--new-message-border);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .email.new-message::before {
+        content: 'NEW';
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: var(--new-message-border);
+        color: #fff;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        z-index: 10;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .email-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         margin-bottom: 0.5rem;
-        flex-wrap: wrap;
         gap: 0.5rem;
     }
 
@@ -385,6 +467,7 @@
         color: var(--colorVI);
         word-wrap: break-word;
         overflow-wrap: break-word;
+        flex: 1;
     }
 
     .subject pre,
@@ -411,6 +494,7 @@
         color: #999;
         word-wrap: break-word;
         overflow-wrap: break-word;
+        white-space: nowrap;
     }
 
     .body {
@@ -420,6 +504,7 @@
         word-wrap: break-word;
         overflow-wrap: break-word;
         max-width: 100%;
+        flex: 1;
     }
 
     .pagination {
@@ -429,6 +514,7 @@
         align-items: center;
         margin-top: 1.5rem;
         flex-wrap: wrap;
+        grid-column: 1 / -1; /* Span all columns in grid */
     }
 
     .page-btn {
@@ -478,6 +564,10 @@
 
         .sidebar:hover {
             width: 160px;
+        }
+
+        #emails {
+            grid-template-columns: 1fr;
         }
     }
 
@@ -554,6 +644,10 @@
             font-size: 0.9rem;
         }
 
+        #emails {
+            grid-template-columns: 1fr;
+        }
+
         .email {
             padding: 0.8rem;
         }
@@ -570,7 +664,8 @@
             font-size: 0.85rem;
         }
 
-        th, td {
+        th,
+        td {
             padding: 0.5rem;
             font-size: 0.85rem;
         }
@@ -665,6 +760,13 @@
         .sidebar nav {
             gap: 1rem;
         }
+
+        .email.new-message::before {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            bottom: 8px;
+            left: 8px;
+        }
     }
 
     /* Overlay for mobile menu */
@@ -696,127 +798,188 @@
 
     <%- include('partials/sidebar') %>
 
-    <main class="main-container">
-        <header>
-            <h1>PICT Dashboard</h1>
-            <button class="mobile-menu-toggle" id="mobileMenuToggle">
-                <span class="material-icons-sharp">menu</span>
-            </button>
-        </header>
+        <main class="main-container">
+            <header>
+                <h1>PICT Dashboard</h1>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span class="material-icons-sharp">menu</span>
+                </button>
+            </header>
 
-        <section class="card about-section">
-            <h2>Welcome to the Course Portal</h2>
-            <p>
-                dashboard description
-            </p>
-            <br>
-            <p>
-                <strong>Managed by:</strong> faculty description
-            </p>
-        </section>
+            <section class="card about-section">
+                <h2>Welcome to the Course Portal</h2>
+                <p>
+                    dashboard description
+                </p>
+                <br>
+                <p>
+                    <strong>Managed by:</strong> faculty description
+                </p>
+            </section>
 
-        <section class="card table-container">
-            <h2>Recent Updates</h2>
-            <div id="emails">
-                <% if (allMails && allMails.length) { %>
-                    <% allMails.forEach(email=> { %>
-                        <div class="email">
-                            <div class="email-header">
-                                <div class="subject">
-                                    <pre><%= email.subject %></pre>
+            <section class="card table-container">
+                <h2>
+                    Recent Updates
+                    <span class="new-count-badge" id="newMessageCount" style="display: none;">0</span>
+                </h2>
+                <div id="emails">
+                    <% if (allMails && allMails.length) { %>
+                        <% allMails.forEach(email=> { %>
+                            <div class="email" data-email-index="<%= allMails.indexOf(email) %>">
+                                <div class="email-header">
+                                    <div class="subject">
+                                        <pre><%= email.subject %></pre>
+                                    </div>
+                                    <div class="date">
+                                        <pre><%= email.date %></pre>
+                                    </div>
                                 </div>
-                                <div class="date">
-                                    <pre><%= email.date %></pre>
-                                </div>
-                            </div>
-                            <!-- <div class="from">
+                                <!-- <div class="from">
                                 <pre><%= email.from %></pre>
                             </div> -->
-                            <div class="body">
-                                <pre><%- email.body %></pre>
+                                <div class="body">
+                                    <%- email.body %>
+                                </div>
                             </div>
-                        </div>
-                        <% }) %>
-                            <% } else { %>
-                                <p>No emails yet.</p>
-                                <% } %>
-            </div>
-        </section>
-        <div class="pagination">
-            <% if (totalPages> 1) { %>
-                <% if (currentPage> 1) { %>
-                    <a href="/messages?page=<%= currentPage - 1 %>&limit=5"
-                        class="page-btn">Previous</a>
-                    <% } %>
-
-                        <% for (let i=1; i <=totalPages; i++) { %>
-                            <a href="/messages?page=<%= i %>&limit=5"
-                                class="page-btn <%= i === currentPage ? 'active' : '' %>">
-                                <%= i %>
-                            </a>
-                            <% } %>
-
-                                <% if (currentPage < totalPages) { %>
-                                    <a href="/messages?page=<%= currentPage + 1 %>&limit=5"
-                                        class="page-btn">Next</a>
+                            <% }) %>
+                                <% } else { %>
+                                    <p>No emails yet.</p>
                                     <% } %>
+                    <div class="pagination">
+                        <% if (totalPages> 1) { %>
+                            <% if (currentPage> 1) { %>
+                                <a href="/messages?page=<%= currentPage - 1 %>&limit=5" class="page-btn">Previous</a>
+                                <% } %>
+
+                                    <% for (let i=1; i <=totalPages; i++) { %>
+                                        <a href="/messages?page=<%= i %>&limit=5"
+                                            class="page-btn <%= i === currentPage ? 'active' : '' %>">
+                                            <%= i %>
+                                        </a>
                                         <% } %>
+
+                                            <% if (currentPage < totalPages) { %>
+                                                <a href="/messages?page=<%= currentPage + 1 %>&limit=5"
+                                                    class="page-btn">Next</a>
+                                                <% } %>
+                                                    <% } %>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            mobileMenuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('active');
+            });
+
+            sidebarOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('active');
+            });
+
+            // Dropdown toggle functionality
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            if (dropdownToggle) {
+                dropdownToggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const dropdown = this.parentElement;
+                    dropdown.classList.toggle('open');
+                });
+            }
+
+            // Connect to SSE endpoint
+            const eventSource = new EventSource("/events");
+
+            eventSource.onmessage = function (event) {
+                const email = JSON.parse(event.data);
+                console.log("📩 New Email:", email);
+
+                const container = document.getElementById("emails");
+                const div = document.createElement("div");
+                div.className = "email new-message";
+                div.innerHTML = `
+        <div class="email-header">
+            <div class="subject"><pre>${email.subject}</pre></div>
+            <div class="date"><pre>${email.date}</pre></div>
         </div>
-    </main>
-
-    <script>
-        // Mobile menu toggle
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const sidebar = document.querySelector('.sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-        mobileMenuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('mobile-open');
-            sidebarOverlay.classList.toggle('active');
-        });
-
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('mobile-open');
-            sidebarOverlay.classList.remove('active');
-        });
-
-        // Dropdown toggle functionality
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        if (dropdownToggle) {
-            dropdownToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const dropdown = this.parentElement;
-                dropdown.classList.toggle('open');
-            });
-        }
-
-        // Connect to SSE endpoint
-        const eventSource = new EventSource("/events");
-
-        eventSource.onmessage = function (event) {
-            const email = JSON.parse(event.data);
-            console.log("📩 New Email:", email);
-
-            const container = document.getElementById("emails");
-            const div = document.createElement("div");
-            div.className = "email";
-            div.innerHTML = `
-        <div class="subject">${email.subject}</div>
-        <div class="from">${email.from}</div>
-        <div class="date">${email.date}</div>
-        <div class="body">${email.body}</div>
+        <div class="body"><pre>${email.body}</pre></div>
       `;
-            container.prepend(div);
-        };
+                container.prepend(div);
+                
+                // Update localStorage
+                const currentCount = Number(localStorage.getItem("totalMessageCount") || 0);
+                localStorage.setItem("totalMessageCount", currentCount + 1);
 
-        document.querySelectorAll(".sub-link").forEach(link => {
-            link.addEventListener("click", event => {
-                event.preventDefault();
-                const type = event.currentTarget.dataset.type;
-                window.location.href = `/messages/getSpecificMessage?type=${type}`;
+                // Update new message count badge
+                const newCountBadge = document.getElementById('newMessageCount');
+                const currentBadgeCount = Number(newCountBadge.textContent || 0);
+                newCountBadge.textContent = currentBadgeCount + 1;
+                newCountBadge.style.display = 'inline-flex';
+            };
+
+            document.querySelectorAll(".sub-link").forEach(link => {
+                link.addEventListener("click", event => {
+                    event.preventDefault();
+                    const type = event.currentTarget.dataset.type;
+                    window.location.href = `/messages/getSpecificMessage?type=${type}`;
+                });
             });
-        });
-    </script>
+
+            // Highlight new messages
+            const currentPage = <%= currentPage %>;
+            const limit = 2; // Must match your backend limit
+            const backendCount = <%= totalMessages %>;
+            const storedCount = Number(localStorage.getItem("totalMessageCount") || 0);
+            const difference = backendCount - storedCount;
+            
+            console.log("Backend Count:", backendCount);
+            console.log("Stored Count:", storedCount);
+            console.log("New Messages:", difference);
+
+            // Update new message count badge
+            const newCountBadge = document.getElementById('newMessageCount');
+            if (difference > 0) {
+                newCountBadge.textContent = difference;
+                newCountBadge.style.display = 'inline-flex';
+                
+                // Calculate which messages to highlight on current page
+                const startIndex = (currentPage - 1) * limit;
+                const endIndex = currentPage * limit;
+                
+                // How many new messages are before current page
+                const newMessagesBeforeCurrentPage = Math.max(0, difference - startIndex);
+                
+                if (newMessagesBeforeCurrentPage > 0) {
+                    // Calculate how many to highlight on this page
+                    const highlightCount = Math.min(newMessagesBeforeCurrentPage, limit);
+                    
+                    // Get all email elements on current page
+                    const emails = document.querySelectorAll('.email');
+                    
+                    // Highlight the first 'highlightCount' messages
+                    for (let i = 0; i < highlightCount && i < emails.length; i++) {
+                        emails[i].classList.add('new-message');
+                    }
+                    
+                    console.log(`Highlighting ${highlightCount} messages on page ${currentPage}`);
+                }
+            } else {
+                newCountBadge.style.display = 'none';
+            }
+
+            // Update localStorage only if backend count is greater
+            if (backendCount > storedCount) {
+                localStorage.setItem("totalMessageCount", backendCount);
+            }
+
+        </script>
 </body>
 
 </html>
