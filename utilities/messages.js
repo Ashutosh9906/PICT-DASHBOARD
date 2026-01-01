@@ -175,6 +175,14 @@ function isCacheEmpty(cache){
   return cache.mails.length === 0 && cache.totalMessages === -1;
 }
 
+const handleResponse = (res, status, message, data = null) => {
+    res.status(status).json({
+        status,
+        message,
+        data,
+    });
+};
+
 export {
     getMessage,
     parseMessage,
@@ -185,5 +193,6 @@ export {
     setLastHistoryId,
     formatBody,
     formatDate,
-    isCacheEmpty
+    isCacheEmpty,
+    handleResponse
 };

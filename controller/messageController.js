@@ -106,7 +106,7 @@ async function handleNewmail(req, res) {
         if (exists) continue;
         const { subject, from, date, body } = await fetchMailById(msgId);
 
-        const email = "ashutoshgandule1@gmail.com"
+        const email = process.env.USER_EMAIL
         const users = await User.findOne({ email })
         if (!users) throw new Error("users not found");
         let isEmail = false;
@@ -213,6 +213,11 @@ async function handlegetMessage(req, res) {
         .limit(limit)
         .sort({ createdAt: -1 })
         .lean();
+      for (let m of allMails) {
+        m.body = formatBody(m.body);
+        m.date = formatDate(m.date);
+        m.subject = m.subject.toUpperCase();
+      }
     }
   } else {
     totalMessages = await Message.countDocuments();

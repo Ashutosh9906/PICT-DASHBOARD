@@ -6,12 +6,14 @@ import { google } from "googleapis";
 import { config } from "dotenv";
 config();
 
-// cache
-
-
 const app = express();
 import oAuth2Client from "./credentials.js";
-const token = JSON.parse(fs.readFileSync("./json/token.json", "utf-8"))
+
+const token = JSON.parse(fs.readFileSync("./json/token.json", "utf-8"));
+oAuth2Client.setCredentials({
+  refresh_token: token.refresh_token
+});
+
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"));
@@ -26,7 +28,6 @@ import { startWatch } from "./controller/messageController.js";
 import errorHandling from "./middlewares/errorHandler.js";
 
 app.use(express.json());
-oAuth2Client.setCredentials(token)
 
 //Start Watch on INBOX
 startWatch()
