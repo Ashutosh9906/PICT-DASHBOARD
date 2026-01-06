@@ -156,7 +156,7 @@ async function handleNewmail(req, res) {
 async function handleGetSpecificMessage(req, res) {
   try {
 
-    const limit = 1;
+    const limit = 10;
     let page = parseInt(req.query.page) || 1;
     let type = req.query.type.toLowerCase();
 
@@ -193,7 +193,7 @@ let cache = {
 
 // ---------------------- Fetch top 10 messages manually ----------------------
 async function handlegetMessage(req, res) {
-  const limit = 2;
+  const limit = 10;
   let page = parseInt(req.query.page) || 1;
   let allMails, totalMessages
 
