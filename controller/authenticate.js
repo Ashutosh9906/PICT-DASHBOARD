@@ -1,10 +1,6 @@
-import { google } from "googleapis";
-import fs from "fs";
-import path from "path";
-
 import oAuth2Client from "../credentials.js";
-import { handleResponse } from "../utilities/messages.js";
-const TOKEN_PATH = path.join(new URL('.', import.meta.url).pathname, '..', 'json', 'token.json');
+import { encrypt, handleResponse } from "../utilities/messages.js";
+import Token from "../models/token.js";
 
 async function handleAuthentication(req, res) {
     try {
@@ -38,29 +34,27 @@ async function handleAuthentication(req, res) {
 // }
 
 async function handleVerifyEmail(req, res, next) {
-    try {
-        const code = req.query.code;
+  try {
+    const { code } = req.query;
+    const { tokens } = await oAuth2Client.getToken(code);
+    if (!tokens.refresh_token) {
+      throw new Error("Refresh token not returned");
+    }
+    const encrypted = encrypt(tokens.refresh_token);
 
-        const { tokens } = await oAuth2Client.getToken(code);
-        let existingTokens = {};
-        if (fs.existsSync(TOKEN_PATH)) {
-            existingTokens = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf-8"));
-        }
-        const finalTokens = {
-            refresh_token: tokens.refresh_token || existingTokens.refresh_token,
-            access_token: tokens.access_token,
-            expiry_date: tokens.expiry_date
-        };
-        if (!finalTokens.refresh_token) {
-            throw new Error("Refresh token missing");
-        } 
-        fs.writeFileSync(TOKEN_PATH, JSON.stringify(finalTokens, null, 2));
-        console.log("Refresh token preserved safely");
-        return handleResponse(res, 200, "Token generated successfully");
-    }
-    catch (error) {
-        next(error);
-    }
+    await Token.findOneAndUpdate(
+      { provider: "google" },
+      {
+        encryptedRefreshToken: JSON.stringify(encrypted),
+        expiryDate: new Date(tokens.expiry_date),
+        updatedAt: new Date()
+      },
+      { upsert: true }
+    );
+    return handleResponse(res, 200, "Gmail access granted successfully");
+  } catch (err) {
+    next(err);
+  }
 }
 
 export { handleAuthentication, handleVerifyEmail };
