@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { google } from "googleapis";
 import oAuth2Client from "../credentials.js";
 import qp from "quoted-printable";
@@ -182,6 +183,48 @@ const handleResponse = (res, status, message, data = null) => {
         data,
     });
 };
+
+
+const ALGORITHM = "aes-256-gcm";
+
+// Must be exactly 32 bytes
+const KEY = Buffer.from(process.env.TOKEN_ENCRYPTION_KEY, "utf8");
+
+if (KEY.length !== 32) {
+  throw new Error("TOKEN_ENCRYPTION_KEY must be 32 bytes");
+}
+
+export function encrypt(text) {
+  const iv = crypto.randomBytes(12); // 96-bit IV for GCM
+  const cipher = crypto.createCipheriv(ALGORITHM, KEY, iv);
+
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+
+  const tag = cipher.getAuthTag();
+
+  return {
+    iv: iv.toString("hex"),
+    content: encrypted,
+    tag: tag.toString("hex")
+  };
+}
+
+export function decrypt(encrypted) {
+  const decipher = crypto.createDecipheriv(
+    ALGORITHM,
+    KEY,
+    Buffer.from(encrypted.iv, "hex")
+  );
+
+  decipher.setAuthTag(Buffer.from(encrypted.tag, "hex"));
+
+  let decrypted = decipher.update(encrypted.content, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+
+  return decrypted;
+}
+
 
 export {
     getMessage,
