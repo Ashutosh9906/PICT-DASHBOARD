@@ -3,7 +3,7 @@ import { handleAuthentication, handleVerifyEmail } from "../controller/authentic
 
 const router = Router();
 
-router.get("/auth", handleAuthentication);
-router.get("/oauth2callback", handleVerifyEmail);
+// router.get("/auth", handleAuthentication);
+// router.get("/oauth2callback", handleVerifyEmail);
 
 export default router;

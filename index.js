@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
 app.get("/healthZ", (req, res) => {
   return res.status(200).send("OK");
 })
-app.use("/user", authenticateRoute);
+// app.use("/user", authenticateRoute);
 app.use("/messages", messageRoute);
 app.use("/userAdmin", userRoutes)
 

@@ -790,6 +790,26 @@
             display: block;
         }
     }
+    /* New message styling */
+    .email.new-message {
+        background: var(--new-message-bg);
+        border: 2px solid var(--new-message-border);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .email.new-message .subject::before {
+        content: 'NEW';
+        display: inline-block;
+        background: var(--new-message-border);
+        color: #fff;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
 </style>
 
 <body>
