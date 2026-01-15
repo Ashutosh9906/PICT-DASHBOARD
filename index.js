@@ -26,6 +26,7 @@ mongoose.connect(process.env.MONGO_URI)
   
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
+app.set("trust proxy", 1);
 
 async function bootstrap() {
   try {
