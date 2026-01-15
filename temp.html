@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Too Many Requests</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --colorI: #f7f2eb;
+            --colorII: #ffffff;
+            --colorIII: #dde3ff;
+            --colorIV: #bad6eb;
+            --colorV: #7096d1;
+            --colorVI: #334eac;
+            --colorVII: #081f5c;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(
+                135deg,
+                var(--colorIV),
+                var(--colorIII)
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-card {
+            background: var(--colorII);
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .error-icon {
+            font-size: 3.5rem;
+            color: var(--colorVI);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--colorVII);
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .retry {
+            margin-top: 1.8rem;
+            display: inline-block;
+            background: var(--colorVI);
+            color: white;
+            padding: 0.7rem 1.6rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .retry:hover {
+            background: var(--colorVII);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            p {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="error-card">
+        <div class="error-icon">🚫</div>
+        <h1>Too Many Requests</h1>
+
+        <p>
+            You are sending requests faster than we can handle.
+            Please slow down to keep the system stable.
+        </p>
+
+        <p class="hint">
+            This is a temporary limit. You’ll be able to continue shortly.
+        </p>
+
+        <a href="/messages" class="retry">Try Again</a>
+    </div>
+
+</body>
+</html>

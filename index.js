@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import mongoose from "mongoose";
 import { config } from "dotenv";
+import rateLimit from "express-rate-limit"
 config();
 
 import { ensureGoogleAuth } from "./utilities/googleAuthUtil.js";
@@ -38,6 +39,25 @@ async function bootstrap() {
 
 bootstrap();
 
+//Rate Limiter
+const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    handler: (req, res) => {
+        if (req.accepts("html")) {
+            return res.status(429).render("rateLimit");
+        }
+
+        res.status(429).json({
+            error: "Too many requests. Please try again later."
+        });
+    }
+});
+
+
 //To authenticate User
 app.get("/", (req, res) => {
   return res.redirect("/messages");
@@ -46,8 +66,8 @@ app.get("/healthZ", (req, res) => {
   return res.status(200).send("OK");
 })
 // app.use("/user", authenticateRoute);
-app.use("/messages", messageRoute);
-app.use("/userAdmin", userRoutes)
+app.use("/messages", limiter, messageRoute);
+app.use("/userAdmin", limiter, userRoutes)
 
 //central error handling system
 app.use(errorHandling)

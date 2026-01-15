@@ -203,7 +203,7 @@ async function handlegetMessage(req, res) {
     if (page === 1) {
       allMails = cache.mails;
       totalMessages = cache.totalMessages;
-      console.log("send cache\n", cache);
+      // console.log("send cache\n", cache);
     } else {
       totalMessages = await Message.countDocuments();
 
@@ -235,7 +235,7 @@ async function handlegetMessage(req, res) {
     if (page === 1) {
       cache.mails = allMails;
       cache.totalMessages = totalMessages;
-      console.log("set cache\n", cache);
+      // console.log("set cache\n", cache);
     }
   }
   const totalPages = Math.ceil(totalMessages / limit);
