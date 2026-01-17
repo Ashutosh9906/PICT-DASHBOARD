@@ -6,12 +6,13 @@ import rateLimit from "express-rate-limit"
 config();
 
 import { ensureGoogleAuth } from "./utilities/googleAuthUtil.js";
-import { handlegetMessage, startWatch } from "./controller/messageController.js";
+import { startWatch } from "./controller/messageController.js";
 
 import authenticateRoute from "./routes/authenticate.js";
 import messageRoute from "./routes/messages.js";
 import userRoutes from "./routes/user.js"
 import errorHandling from "./middlewares/errorHandler.js";
+import { limiter } from "./middlewares/limiter.js";
 
 const app = express();
 
@@ -40,27 +41,8 @@ async function bootstrap() {
 
 bootstrap();
 
-//Rate Limiter
-export const limiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-
-    handler: (req, res) => {
-        if (req.accepts("html")) {
-            return res.status(429).render("rateLimit");
-        }
-
-        res.status(429).json({
-            error: "Too many requests. Please try again later."
-        });
-    }
-});
-
-
 //To authenticate User
-app.get("/", (req, res) => {
+app.get("/", limiter, (req, res) => {
   return res.redirect("/messages");
 });
 app.get("/healthZ", (req, res) => {
